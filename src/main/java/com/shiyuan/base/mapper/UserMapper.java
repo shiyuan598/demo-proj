@@ -1,6 +1,6 @@
 package com.shiyuan.base.mapper;
 
-import com.shiyuan.base.entity.User;
+import com.shiyuan.base.entity.AppUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2025-04-22 16:42:19
 * @Entity com.shiyuan.base.entity.User
 */
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends BaseMapper<AppUser> {
 
 }
 

@@ -1,7 +1,7 @@
 package com.shiyuan.base.controller;
 
-import com.shiyuan.base.common.ResponseUtil;
-import com.shiyuan.base.entity.User;
+import com.shiyuan.base.entity.AppUser;
+import com.shiyuan.base.util.ResponseUtils;
 import com.shiyuan.base.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,13 +25,13 @@ public class UserController {
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
-    public ResponseEntity<ResponseUtil> list() {
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AppUser.class)))
+    public ResponseEntity<ResponseUtils> list() {
         try {
-                List<User> listData = userService.list();
-                return ResponseUtil.success(listData);
+                List<AppUser> listData = userService.list();
+                return ResponseUtils.success(listData);
             } catch (Exception e) {
-                return ResponseUtil.error("An error occurred while fetching user data: " + e.getMessage());
+                return ResponseUtils.error("An error occurred while fetching user data: " + e.getMessage());
             }
     }
 }

@@ -1,4 +1,4 @@
-package com.shiyuan.base.common;
+package com.shiyuan.base.util;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.Getter;
@@ -11,14 +11,14 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class ResponseUtil {
+public class ResponseUtils {
     private boolean success;
     private int code;
     private String message;
     private Object data;
     private Map<String, Object> pagination;
 
-    private ResponseUtil(boolean success, int code, String message, Object data, Map<String, Object> pagination) {
+    private ResponseUtils(boolean success, int code, String message, Object data, Map<String, Object> pagination) {
         this.success = success;
         this.code = code;
         this.message = message;
@@ -26,7 +26,7 @@ public class ResponseUtil {
         this.pagination = pagination;
     }
 
-    public static ResponseEntity<ResponseUtil> success(Object data) {
+    public static ResponseEntity<ResponseUtils> success(Object data) {
         Map<String, Object> pagination = null;
         if (data instanceof IPage<?> page) {
             pagination = new HashMap<>();
@@ -36,14 +36,14 @@ public class ResponseUtil {
             pagination.put("pages", page.getPages());
             data = page.getRecords();
         }
-        return ResponseEntity.ok(new ResponseUtil(true, 0, "success", data, pagination));
+        return ResponseEntity.ok(new ResponseUtils(true, 0, "success", data, pagination));
     }
 
-    public static ResponseEntity<ResponseUtil> fail(int code, String message) {
-        return ResponseEntity.ok(new ResponseUtil(false, code, message, null, null));
+    public static ResponseEntity<ResponseUtils> fail(int code, String message) {
+        return ResponseEntity.ok(new ResponseUtils(false, code, message, null, null));
     }
 
-    public static ResponseEntity<ResponseUtil> error(String message) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseUtil(false, 500, message, null, null));
+    public static ResponseEntity<ResponseUtils> error(String message) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseUtils(false, 500, message, null, null));
     }
 }

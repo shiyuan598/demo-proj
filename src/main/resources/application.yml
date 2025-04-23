@@ -5,6 +5,7 @@ server:
 
 jwt:
   secret: "U2FsdGVkX199c1Q2c2h5c25vbmV0aW5nYm9va2JveGV4YW1wbGU="
+  expiration: 86400000
 
 spring:
   application:

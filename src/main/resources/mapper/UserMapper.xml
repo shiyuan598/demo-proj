@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shiyuan.base.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="com.shiyuan.base.entity.User">
+    <resultMap id="BaseResultMap" type="com.shiyuan.base.entity.AppUser">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="username" column="username" jdbcType="VARCHAR"/>

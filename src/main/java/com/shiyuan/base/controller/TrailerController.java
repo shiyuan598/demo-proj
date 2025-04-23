@@ -1,6 +1,6 @@
 package com.shiyuan.base.controller;
 
-import com.shiyuan.base.common.ResponseUtil;
+import com.shiyuan.base.util.ResponseUtils;
 import com.shiyuan.base.entity.Trailer;
 import com.shiyuan.base.service.TrailerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,12 +28,12 @@ public class TrailerController {
 
     @Operation(summary = "车辆挂载字典")
     @GetMapping("/dict")
-    public ResponseEntity<ResponseUtil> dict() {
+    public ResponseEntity<ResponseUtils> dict() {
         try {
             List<Trailer> listData = trailerService.list();
-            return ResponseUtil.success(listData);
+            return ResponseUtils.success(listData);
         } catch (Exception e) {
-            return ResponseUtil.error("An error occurred while fetching trailer data: " + e.getMessage());
+            return ResponseUtils.error("An error occurred while fetching trailer data: " + e.getMessage());
         }
     }
 }
