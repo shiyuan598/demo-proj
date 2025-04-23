@@ -1,41 +1,37 @@
 package com.shiyuan.base.controller;
 
+import com.shiyuan.base.common.ResponseUtil;
 import com.shiyuan.base.entity.User;
 import com.shiyuan.base.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Tag(name = "用户相关")
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public String hello() {
-        return "hello";
-    }
-
+    @Operation(summary = "用户列表")
     @GetMapping("/list")
-    public ResponseEntity<Object> list() {
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
+    public ResponseEntity<ResponseUtil> list() {
         try {
-            List<User> listData = userService.list();
-            System.out.println(listData);
-            Map<String, Object> map = new HashMap<>(4);
-            map.put("code", 200);
-            map.put("data", listData);
-            map.put("msg", "success");
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+                List<User> listData = userService.list();
+                return ResponseUtil.success(listData);
+            } catch (Exception e) {
+                return ResponseUtil.error("An error occurred while fetching user data: " + e.getMessage());
+            }
     }
 }

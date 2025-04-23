@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * @TableName v_order_state
+ * @TableName v_trailer
  */
-@TableName(value ="v_order_state")
+@TableName(value ="v_trailer")
 @Data
-public class OrderState {
+public class Trailer {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
-    private Integer state;
 
     private String name;
 }

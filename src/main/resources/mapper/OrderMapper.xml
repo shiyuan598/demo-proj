@@ -15,7 +15,7 @@
             <result property="address" column="address" jdbcType="VARCHAR"/>
             <result property="purpose" column="purpose" jdbcType="VARCHAR"/>
             <result property="route" column="route" jdbcType="VARCHAR"/>
-            <result property="load" column="load" jdbcType="INTEGER"/>
+            <result property="trailer" column="trailer" jdbcType="INTEGER"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="approver" column="approver" jdbcType="INTEGER"/>

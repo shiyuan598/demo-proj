@@ -1,11 +1,12 @@
 package com.shiyuan.base.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @TableName v_order
@@ -13,6 +14,7 @@ import lombok.Data;
 @TableName(value ="v_order")
 @Data
 public class Order {
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private Integer subscriber;
@@ -23,8 +25,10 @@ public class Order {
 
     private Integer vehicleId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     private String address;
@@ -33,10 +37,12 @@ public class Order {
 
     private String route;
 
-    private Integer load;
+    private Integer trailer;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     private Integer approver;

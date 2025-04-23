@@ -16,30 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `v_load`
---
-
-DROP TABLE IF EXISTS `v_load`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `v_load` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='车辆带挂';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `v_load`
---
-
-LOCK TABLES `v_load` WRITE;
-/*!40000 ALTER TABLE `v_load` DISABLE KEYS */;
-INSERT INTO `v_load` VALUES (1,'不带挂'),(2,'空挂'),(3,'5T'),(4,'10T'),(5,'15T'),(6,'20T'),(7,'25T'),(8,'30T'),(9,'31T');
-/*!40000 ALTER TABLE `v_load` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `v_module`
 --
 
@@ -82,7 +58,7 @@ CREATE TABLE `v_order` (
   `address` varchar(100) NOT NULL COMMENT '使用地点',
   `purpose` varchar(100) NOT NULL COMMENT '约车目的',
   `route` varchar(100) DEFAULT NULL COMMENT '测试路线',
-  `load` int NOT NULL COMMENT '带挂',
+  `trailer` int NOT NULL COMMENT '带挂',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `approver` int DEFAULT NULL COMMENT '审批人',
@@ -151,6 +127,30 @@ LOCK TABLES `v_project` WRITE;
 /*!40000 ALTER TABLE `v_project` DISABLE KEYS */;
 INSERT INTO `v_project` VALUES (2,'L4'),(3,'L2++'),(6,'环卫'),(7,'红旗'),(8,'L2'),(9,'临时项目');
 /*!40000 ALTER TABLE `v_project` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `v_trailer`
+--
+
+DROP TABLE IF EXISTS `v_trailer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `v_trailer` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='车辆带挂';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `v_trailer`
+--
+
+LOCK TABLES `v_trailer` WRITE;
+/*!40000 ALTER TABLE `v_trailer` DISABLE KEYS */;
+INSERT INTO `v_trailer` VALUES (1,'不带挂'),(2,'空挂'),(3,'5T'),(4,'10T'),(5,'15T'),(6,'20T'),(7,'25T'),(8,'30T'),(9,'31T');
+/*!40000 ALTER TABLE `v_trailer` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -225,4 +225,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-22 16:12:34
+-- Dump completed on 2025-04-23 10:46:11
