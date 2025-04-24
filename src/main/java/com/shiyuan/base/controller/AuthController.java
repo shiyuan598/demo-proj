@@ -8,6 +8,7 @@ import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "认证相关")
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
@@ -44,6 +46,7 @@ public class AuthController {
                 return ResponseUtils.fail(400,"用户名或密码错误");
             }
         } catch (Exception e) {
+            log.error("登录处理异常: {}", e.getMessage(), e);
             return ResponseUtils.error(e.getMessage());
         }
     }
@@ -69,6 +72,7 @@ public class AuthController {
             appUser.setToken(token);
             return ResponseUtils.success(appUser);
         } catch (Exception e) {
+            log.error("注册用户异常: {}", e.getMessage(), e);
             return ResponseUtils.error(e.getMessage());
         }
     }
@@ -87,6 +91,7 @@ public class AuthController {
                 return ResponseUtils.fail(400, "用户名或手机号不正确，密码修改失败");
             }
         } catch (Exception e) {
+            log.error("忘记密码异常: {}", e.getMessage(), e);
             return ResponseUtils.error(e.getMessage());
         }
     }

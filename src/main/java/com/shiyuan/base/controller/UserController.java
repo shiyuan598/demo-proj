@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.shiyuan.base.entity.VUser;
+import com.shiyuan.base.entity.converter.UserConverter;
 import com.shiyuan.base.entity.vo.user.VUserVO;
 import com.shiyuan.base.entity.vo.user.VUserVOListResponse;
 import com.shiyuan.base.entity.vo.user.VUserVOPageResponse;
@@ -17,23 +18,25 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "用户相关")
-@RestController
+//@RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
     @Autowired
     private VUserService userService;
+
+    @Autowired
+    private UserConverter userConverter;
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")
@@ -41,15 +44,9 @@ public class UserController {
     public ResponseEntity<ResponseUtils> list() {
         try {
             List<VUser> userList = userService.list();
-            List<VUserVO> userVOList = new ArrayList<>();
-            for (VUser user : userList) {
-                VUserVO userVO = new VUserVO();
-                BeanUtils.copyProperties(user, userVO);
-                userVOList.add(userVO);
-            }
-            return ResponseUtils.success(userVOList);
+            return ResponseUtils.success(userConverter.toVOList(userList));
         } catch (Exception e) {
-            return ResponseUtils.error("An error occurred while fetching user data: " + e.getMessage());
+            return ResponseUtils.error(e.getMessage());
         }
     }
 
@@ -95,17 +92,12 @@ public class UserController {
 
             IPage<VUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
             List<VUser> userList = userPage.getRecords();
-            List<VUserVO> userVOList = new ArrayList<>();
-            for (VUser user : userList) {
-                VUserVO userVO = new VUserVO();
-                BeanUtils.copyProperties(user, userVO);
-                userVOList.add(userVO);
-            }
             Page<VUserVO> pageVO = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
-            pageVO.setRecords(userVOList);
+            pageVO.setRecords(userConverter.toVOList(userList));
             return ResponseUtils.success(pageVO);
         } catch (Exception e) {
-            return ResponseUtils.error("An error occurred while fetching user data: " + e.getMessage());
+            log.error("查询用户分页数据异常: {}", e.getMessage(), e);
+            return ResponseUtils.error(e.getMessage());
         }
     }
 }
