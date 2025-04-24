@@ -1,7 +1,7 @@
 package com.shiyuan.base.controller;
 
-import com.shiyuan.base.entity.VTrailer;
-import com.shiyuan.base.service.VTrailerService;
+import com.shiyuan.base.entity.VModule;
+import com.shiyuan.base.service.VModuleService;
 import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,24 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "车辆挂载")
+@Tag(name="所属模块")
 @RestController
-@RequestMapping("/trailer")
-@ApiResponse(responseCode = "200", description = "查询成功",
-        content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = VTrailer.class)))
-public class TrailerController {
+@RequestMapping("/group")
+@ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Module.class)))
+public class ModuleController {
     @Autowired
-    private VTrailerService trailerService;
+    private VModuleService moduleService;
 
-    @Operation(summary = "车辆挂载字典")
+    @Operation(summary = "所属模块")
     @GetMapping("/dict")
     public ResponseEntity<ResponseUtils> dict() {
         try {
-            List<VTrailer> listData = trailerService.list();
-            return ResponseUtils.success(listData);
+            List<VModule> list = moduleService.list();
+            return ResponseUtils.success(list);
         } catch (Exception e) {
-            return ResponseUtils.error("An error occurred while fetching trailer data: " + e.getMessage());
+            return ResponseUtils.error("" + e.getMessage());
         }
     }
 }

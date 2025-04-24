@@ -1,7 +1,8 @@
 package com.shiyuan.base.service.impl;
 
-import com.shiyuan.base.entity.AppUser;
-import com.shiyuan.base.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shiyuan.base.entity.VUser;
+import com.shiyuan.base.service.VUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Autowired
-    private UserService userService;
+    private VUserService userService;
 
-    public UserDetailsServiceImpl(UserService userService) {
+    public UserDetailsServiceImpl(VUserService userService) {
         this.userService = userService;
         logger.info("UserDetailsServiceImpl initialized with UserService: {}", userService.getClass().getName());
     }
@@ -32,9 +33,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 根据用户名查询用户信息
-        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<AppUser> wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
-        wrapper.eq(AppUser::getUsername, username);
-        AppUser vAppUser = userService.getOne(wrapper);
+        LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(VUser::getUsername, username);
+        VUser vAppUser = userService.getOne(wrapper);
 
         if (vAppUser == null) {
             throw new UsernameNotFoundException("用户 " + username + " 不存在");

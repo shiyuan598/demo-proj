@@ -1,8 +1,8 @@
 package com.shiyuan.base.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.shiyuan.base.entity.AppUser;
-import com.shiyuan.base.service.UserService;
+import com.shiyuan.base.entity.VUser;
+import com.shiyuan.base.service.VUserService;
 import com.shiyuan.base.util.JwtUtils;
 import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserService userService;
+    private VUserService userService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -31,15 +31,15 @@ public class AuthController {
     public ResponseEntity<ResponseUtils> login(@Parameter(description = "用户名") @RequestParam String username, @Parameter(description = "密码") @RequestParam String password) {
         try {
             // 查询用户信息
-            LambdaQueryWrapper<AppUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(AppUser::getUsername, username);
-            AppUser appUser =  userService.getOne(wrapper);
-            if (appUser != null && passwordEncoder.matches(password, appUser.getPassword())) {
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getUsername, username);
+            VUser user =  userService.getOne(wrapper);
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
                 // 密码匹配，生成 JWT Token
                 String token = jwtUtils.generateToken(username);
-                appUser.setPassword(""); // 抹掉密码
-                appUser.setToken(token);
-                return ResponseUtils.success(appUser);
+                user.setPassword(""); // 抹掉密码
+                user.setToken(token);
+                return ResponseUtils.success(user);
             } else {
                 return ResponseUtils.fail(400,"用户名或密码错误");
             }
@@ -50,11 +50,11 @@ public class AuthController {
 
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ResponseEntity<ResponseUtils> register(@Parameter(description = "用户信息") @RequestBody AppUser appUser) {
+    public ResponseEntity<ResponseUtils> register(@Parameter(description = "用户信息") @RequestBody VUser appUser) {
         try {
             // 检查用户名是否已存在
-            LambdaQueryWrapper<AppUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(AppUser::getUsername, appUser.getUsername());
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getUsername, appUser.getUsername());
             long count = userService.count(wrapper);
             if (count > 0) {
                 return ResponseUtils.fail(400,"用户名已存在");

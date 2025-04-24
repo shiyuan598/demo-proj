@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
-import com.shiyuan.base.entity.AppUser;
-import com.shiyuan.base.entity.vo.user.AppUserListResponse;
-import com.shiyuan.base.entity.vo.user.AppUserPageResponse;
-import com.shiyuan.base.entity.vo.user.AppUserVO;
-import com.shiyuan.base.service.UserService;
+import com.shiyuan.base.entity.VUser;
+import com.shiyuan.base.entity.vo.user.VUserVO;
+import com.shiyuan.base.entity.vo.user.VUserVOListResponse;
+import com.shiyuan.base.entity.vo.user.VUserVOPageResponse;
+import com.shiyuan.base.service.VUserService;
 import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,17 +33,17 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private VUserService userService;
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AppUserListResponse.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOListResponse.class)))
     public ResponseEntity<ResponseUtils> list() {
         try {
-            List<AppUser> listData = userService.list();
-            List<AppUserVO> userVOList = new ArrayList<>();
-            for (AppUser user : listData) {
-                AppUserVO userVO = new AppUserVO();
+            List<VUser> userList = userService.list();
+            List<VUserVO> userVOList = new ArrayList<>();
+            for (VUser user : userList) {
+                VUserVO userVO = new VUserVO();
                 BeanUtils.copyProperties(user, userVO);
                 userVOList.add(userVO);
             }
@@ -53,10 +53,9 @@ public class UserController {
         }
     }
 
-
     @Operation(summary = "用户分页列表")
     @GetMapping
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AppUserPageResponse.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOPageResponse.class)))
     public ResponseEntity<ResponseUtils> getUserPage(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
 
                                                      @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long currentPage,
@@ -68,41 +67,41 @@ public class UserController {
                                                      @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
 
         try {
-            LambdaQueryWrapper<AppUser> queryWrapper = new LambdaQueryWrapper<>();
+            LambdaQueryWrapper<VUser> queryWrapper = new LambdaQueryWrapper<>();
             if (StrUtil.isNotBlank(blurry)) {
-                queryWrapper.like(AppUser::getName, blurry).or().like(AppUser::getUsername, blurry);
+                queryWrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
             }
             if (StrUtil.isNotBlank(sort)) {
                 boolean isAsc = StringUtils.isBlank(order) || "asc".equalsIgnoreCase(order);
                 // 根据不同字段排序
                 switch (sort.toLowerCase()) {
                     case "username":
-                        queryWrapper.orderBy(true, isAsc, AppUser::getUsername);
+                        queryWrapper.orderBy(true, isAsc, VUser::getUsername);
                         break;
                     case "role":
-                        queryWrapper.orderBy(true, isAsc, AppUser::getRole);
+                        queryWrapper.orderBy(true, isAsc, VUser::getRole);
                         break;
                     case "name":
-                        queryWrapper.orderBy(true, isAsc, AppUser::getName);
+                        queryWrapper.orderBy(true, isAsc, VUser::getName);
                         break;
                     default:
                         // 默认按id降序
-                        queryWrapper.orderByDesc(AppUser::getId);
+                        queryWrapper.orderByDesc(VUser::getId);
                 }
             } else {
                 // 默认按id降序
-                queryWrapper.orderByDesc(AppUser::getId);
+                queryWrapper.orderByDesc(VUser::getId);
             }
 
-            IPage<AppUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
-            List<AppUser> userList = userPage.getRecords();
-            List<AppUserVO> userVOList = new ArrayList<>();
-            for (AppUser user : userList) {
-                AppUserVO userVO = new AppUserVO();
+            IPage<VUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
+            List<VUser> userList = userPage.getRecords();
+            List<VUserVO> userVOList = new ArrayList<>();
+            for (VUser user : userList) {
+                VUserVO userVO = new VUserVO();
                 BeanUtils.copyProperties(user, userVO);
                 userVOList.add(userVO);
             }
-            Page<AppUserVO> pageVO = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
+            Page<VUserVO> pageVO = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
             pageVO.setRecords(userVOList);
             return ResponseUtils.success(pageVO);
         } catch (Exception e) {
