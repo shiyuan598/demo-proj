@@ -11,6 +11,7 @@ import com.shiyuan.base.entity.vo.user.VUserVO;
 import com.shiyuan.base.entity.vo.user.VUserVOListResponse;
 import com.shiyuan.base.entity.vo.user.VUserVOPageResponse;
 import com.shiyuan.base.service.VUserService;
+import com.shiyuan.base.util.PageConverter;
 import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -92,9 +93,7 @@ public class UserController {
             }
 
             IPage<VUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
-            List<VUser> userList = userPage.getRecords();
-            Page<VUserVO> pageVO = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
-            pageVO.setRecords(userConverter.toVOList(userList));
+            IPage<VUserVO> pageVO = PageConverter.convert(userPage, userConverter::toVO);
             return ResponseUtils.success(pageVO);
         } catch (Exception e) {
             log.error("查询用户分页数据异常: {}", e.getMessage(), e);

@@ -4,18 +4,14 @@ package com.shiyuan.base.entity.converter;
 import com.shiyuan.base.entity.VUser;
 import com.shiyuan.base.entity.dto.VUserDTO;
 import com.shiyuan.base.entity.vo.user.VUserVO;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserConverter {
-//    // DTO 转 Entity
-//    @Mapping(target = "createdAt", ignore = true)
-//    @Mapping(target = "updatedAt", ignore = true)
+    // DTO 转 Entity
+    @Mapping(target = "token", ignore = true)
     VUser toEntity(VUserDTO userDTO);
 
     // Entity 转 VO
@@ -27,5 +23,4 @@ public interface UserConverter {
     // 部分更新 Entity
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDto(VUserDTO userDTO, @MappingTarget VUser user);
-
 }
