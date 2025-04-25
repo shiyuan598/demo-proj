@@ -2,16 +2,15 @@ package com.shiyuan.base.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.shiyuan.base.entity.VUser;
 import com.shiyuan.base.entity.converter.UserConverter;
+import com.shiyuan.base.entity.dto.VUserDTO;
+import com.shiyuan.base.entity.vo.BaseResponse;
 import com.shiyuan.base.entity.vo.user.VUserVO;
 import com.shiyuan.base.entity.vo.user.VUserVOListResponse;
 import com.shiyuan.base.entity.vo.user.VUserVOPageResponse;
 import com.shiyuan.base.service.VUserService;
-import com.shiyuan.base.util.PageConverter;
 import com.shiyuan.base.util.ResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,10 +21,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserConverter userConverter;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")
@@ -70,6 +70,77 @@ public class UserController {
             return ResponseUtils.success(pageVO);
         } catch (Exception e) {
             log.error("查询用户分页数据异常: {}", e.getMessage(), e);
+            return ResponseUtils.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "添加用户")
+    @PostMapping
+    @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    public ResponseEntity<ResponseUtils> addUser(@RequestBody VUserDTO vUserDTO) {
+        try {
+            VUser user = userConverter.toEntity(vUserDTO);
+            if (user == null) {
+                log.error("用户数据转换失败: {}", vUserDTO);
+                return ResponseUtils.fail(400, "用户数据转换失败");
+            }
+            // 检查用户名是否已存在
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getUsername, user.getUsername());
+            long count = userService.count(wrapper);
+            if (count > 0) {
+                return ResponseUtils.fail(400, "用户名已存在");
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword())); // 加密密码
+            boolean result = userService.save(user);
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            log.error("创建用户异常: {}", e.getMessage(), e);
+            return ResponseUtils.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "更新用户")
+    @PutMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    public ResponseEntity<ResponseUtils> updateUser(@PathVariable Integer id, @RequestBody VUserDTO vUserDTO) {
+        try {
+            VUser user = userConverter.toEntity(vUserDTO);
+            if (user == null) {
+                log.error("用户数据转换失败: {}", vUserDTO);
+                return ResponseUtils.fail(400, "用户数据转换失败");
+            }
+            // 检查用户名是否已存在
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getId, id);
+            long count = userService.count(wrapper);
+            if (count <= 0) {
+                return ResponseUtils.fail(400, "用户不已存在");
+            }
+            user.setId(id);
+            // 不更新username
+            user.setUsername(null);
+            // 加密密码
+            if (StrUtil.isNotBlank(user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(user.getPassword())); // 加密密码
+            }
+            boolean result = userService.updateById(user);
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            log.error("更新用户异常: {}", e.getMessage(), e);
+            return ResponseUtils.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "删除用户")
+    @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    public ResponseEntity<ResponseUtils> deleteUser(@PathVariable Integer id) {
+        try {
+            boolean result = userService.removeById(id);
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            log.error("删除用户异常: {}", e.getMessage(), e);
             return ResponseUtils.error(e.getMessage());
         }
     }

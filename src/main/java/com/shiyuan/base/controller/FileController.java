@@ -1,6 +1,7 @@
 package com.shiyuan.base.controller;
 
 import com.shiyuan.base.util.ResponseUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Tag(name="文件")
 @RestController
 @RequestMapping("/file")
 public class FileController {

@@ -11,10 +11,11 @@ import com.shiyuan.base.entity.vo.user.VUserVO;
 import com.shiyuan.base.mapper.VUserMapper;
 import com.shiyuan.base.service.VUserService;
 import com.shiyuan.base.util.PageConverter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
 * @author wangshiyuan
@@ -33,7 +34,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     public boolean forgetPassword(String username, String telephone, String newPassword) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VUser::getUsername, username).eq(VUser::getTelephone, telephone);
-        VUser user = getOne(wrapper);
+        VUser user = this.getOne(wrapper);
         if (user != null) {
             user.setPassword(passwordEncoder.encode(newPassword));
             return updateById(user);
@@ -49,7 +50,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
         }
 
         boolean isAsc = !"desc".equalsIgnoreCase(order);
-        switch (StringUtils.defaultString(sort, "id").toLowerCase()) {
+        switch (Objects.toString(sort, "id").toLowerCase()) {
             case "username" -> wrapper.orderBy(true, isAsc, VUser::getUsername);
             case "role"     -> wrapper.orderBy(true, isAsc, VUser::getRole);
             case "name"     -> wrapper.orderBy(true, isAsc, VUser::getName);
