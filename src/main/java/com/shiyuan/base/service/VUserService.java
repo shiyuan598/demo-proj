@@ -1,7 +1,9 @@
 package com.shiyuan.base.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.shiyuan.base.entity.VUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shiyuan.base.entity.vo.user.VUserVO;
 
 /**
 * @author wangshiyuan
@@ -11,4 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface VUserService extends IService<VUser> {
 
     boolean forgetPassword(String username, String telephone, String newPassword);
+
+    IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order);
 }

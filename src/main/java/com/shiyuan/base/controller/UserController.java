@@ -66,34 +66,7 @@ public class UserController {
                                                      @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
 
         try {
-            LambdaQueryWrapper<VUser> queryWrapper = new LambdaQueryWrapper<>();
-            if (StrUtil.isNotBlank(blurry)) {
-                queryWrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
-            }
-            if (StrUtil.isNotBlank(sort)) {
-                boolean isAsc = StringUtils.isBlank(order) || "asc".equalsIgnoreCase(order);
-                // 根据不同字段排序
-                switch (sort.toLowerCase()) {
-                    case "username":
-                        queryWrapper.orderBy(true, isAsc, VUser::getUsername);
-                        break;
-                    case "role":
-                        queryWrapper.orderBy(true, isAsc, VUser::getRole);
-                        break;
-                    case "name":
-                        queryWrapper.orderBy(true, isAsc, VUser::getName);
-                        break;
-                    default:
-                        // 默认按id降序
-                        queryWrapper.orderByDesc(VUser::getId);
-                }
-            } else {
-                // 默认按id降序
-                queryWrapper.orderByDesc(VUser::getId);
-            }
-
-            IPage<VUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
-            IPage<VUserVO> pageVO = PageConverter.convert(userPage, userConverter::toVO);
+            IPage<VUserVO> pageVO = userService.getUserPage(blurry, currentPage, pageSize, sort, order);
             return ResponseUtils.success(pageVO);
         } catch (Exception e) {
             log.error("查询用户分页数据异常: {}", e.getMessage(), e);
