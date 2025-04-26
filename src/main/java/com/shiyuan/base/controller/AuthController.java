@@ -53,24 +53,24 @@ public class AuthController {
 
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ResponseEntity<ResponseUtils> register(@Parameter(description = "用户信息") @RequestBody VUser appUser) {
+    public ResponseEntity<ResponseUtils> register(@Parameter(description = "用户信息") @RequestBody VUser vUser) {
         try {
             // 检查用户名是否已存在
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(VUser::getUsername, appUser.getUsername());
+            wrapper.eq(VUser::getUsername, vUser.getUsername());
             long count = userService.count(wrapper);
             if (count > 0) {
                 return ResponseUtils.fail(400,"用户名已存在");
             }
 
             // 注册用户
-            appUser.setPassword(passwordEncoder.encode(appUser.getPassword())); // 加密密码
-            userService.save(appUser);
+            vUser.setPassword(passwordEncoder.encode(vUser.getPassword())); // 加密密码
+            userService.save(vUser);
             // 生成 JWT Token
-            String token = jwtUtils.generateToken(appUser.getUsername());
-            appUser.setPassword(""); // 抹掉密码
-            appUser.setToken(token);
-            return ResponseUtils.success(appUser);
+            String token = jwtUtils.generateToken(vUser.getUsername());
+            vUser.setPassword(""); // 抹掉密码
+            vUser.setToken(token);
+            return ResponseUtils.success(vUser);
         } catch (Exception e) {
             log.error("注册用户异常: {}", e.getMessage(), e);
             return ResponseUtils.error(e.getMessage());

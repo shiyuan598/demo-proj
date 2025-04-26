@@ -52,6 +52,23 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "司机列表")
+    @GetMapping("/driver")
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVO.class)))
+    public ResponseEntity<ResponseUtils> getDrivers(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry) {
+        try {
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getRole, 2);
+            if (StrUtil.isNotBlank(blurry)) {
+                wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
+            }
+            List<VUser> drivers = userService.list(wrapper);
+            return ResponseUtils.success(userConverter.toVOList(drivers));
+        } catch (Exception e) {
+            return ResponseUtils.error(e.getMessage());
+        }
+    }
+
     @Operation(summary = "用户分页列表")
     @GetMapping
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOPageResponse.class)))
@@ -77,7 +94,7 @@ public class UserController {
     @Operation(summary = "添加用户")
     @PostMapping
     @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseUtils> addUser(@RequestBody VUserDTO vUserDTO) {
+    public ResponseEntity<ResponseUtils> addUser(@Parameter(description = "用户信息") @RequestBody VUserDTO vUserDTO) {
         try {
             VUser user = userConverter.toEntity(vUserDTO);
             if (user == null) {
@@ -103,7 +120,7 @@ public class UserController {
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseUtils> updateUser(@PathVariable Integer id, @RequestBody VUserDTO vUserDTO) {
+    public ResponseEntity<ResponseUtils> updateUser(@Parameter(description = "用户Id") @PathVariable Integer id, @Parameter(description = "用户信息") @RequestBody VUserDTO vUserDTO) {
         try {
             VUser user = userConverter.toEntity(vUserDTO);
             if (user == null) {
