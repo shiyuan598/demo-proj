@@ -86,7 +86,7 @@ public class UserController {
             @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
         try {
             IPage<VUserVO> pageVO = userService.getUserPage(blurry, currentPage, pageSize, sort, order);
-            return ResponseEntity.ok(ResponseResult.page(pageVO));
+            return ResponseEntity.ok(ResponseResult.success(pageVO));
         } catch (Exception e) {
             log.error("查询用户分页列表失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));

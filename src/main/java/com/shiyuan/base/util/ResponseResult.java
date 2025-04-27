@@ -15,8 +15,6 @@ public class ResponseResult<T> {
     private T data;
     private Map<String, Object> pagination;
 
-    private ResponseResult() {}
-
     private ResponseResult(boolean success, int code, String message, T data, Map<String, Object> pagination) {
         this.success = success;
         this.code = code;
@@ -29,7 +27,7 @@ public class ResponseResult<T> {
         return new ResponseResult<>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data, null);
     }
 
-    public static <T> ResponseResult<List<T>> page(IPage<T> page) {
+    public static <T> ResponseResult<List<T>> success(IPage<T> page) {
         Map<String, Object> pagination = new HashMap<>();
         pagination.put("current", page.getCurrent());
         pagination.put("size", page.getSize());
