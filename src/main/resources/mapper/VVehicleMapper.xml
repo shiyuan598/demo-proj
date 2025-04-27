@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shiyuan.base.mapper.VVehicleMapper">
+<mapper namespace="com.shiyuan.base.modules.vehicle.VVehicleMapper">
 
-    <resultMap id="BaseResultMap" type="com.shiyuan.base.entity.VVehicle">
+    <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.vehicle.VVehicle">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="vehicleNo" column="vehicle_no" jdbcType="VARCHAR"/>
             <result property="project" column="project" jdbcType="VARCHAR"/>
@@ -20,7 +20,7 @@
         place,state,create_time,
         reason,maintainer
     </sql>
-    <select id="selectVehiclePage" resultType="com.shiyuan.base.entity.vo.vehicle.VVehicleVO">
+    <select id="selectVehiclePage" resultType="com.shiyuan.base.modules.vehicle.vo.VVehicleVO">
         SELECT
         v.id,
         v.vehicle_no AS vehicleNo,

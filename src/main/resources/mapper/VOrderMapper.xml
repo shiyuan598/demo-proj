@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shiyuan.base.mapper.VOrderMapper">
+<mapper namespace="com.shiyuan.base.modules.order.VOrderMapper">
 
-    <resultMap id="BaseResultMap" type="com.shiyuan.base.entity.VOrder">
+    <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.order.VOrder">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="subscriber" column="subscriber" jdbcType="INTEGER"/>
             <result property="subscribeNote" column="subscribe_note" jdbcType="VARCHAR"/>
