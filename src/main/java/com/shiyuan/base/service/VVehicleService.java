@@ -1,8 +1,11 @@
 package com.shiyuan.base.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.shiyuan.base.entity.VVehicle;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiyuan.base.entity.vo.vehicle.VVehicleDictVO;
+import com.shiyuan.base.entity.vo.vehicle.VVehicleVO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,4 +16,7 @@ import java.util.List;
 */
 public interface VVehicleService extends IService<VVehicle> {
     List<VVehicleDictVO> getDictVO(String blurry);
+
+    @Transactional(readOnly = true)
+    IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order);
 }

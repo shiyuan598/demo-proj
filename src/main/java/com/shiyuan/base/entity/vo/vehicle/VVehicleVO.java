@@ -8,4 +8,5 @@ import lombok.Data;
 @Schema(description = "车辆")
 public class VVehicleVO extends VVehicle {
     private String stateName;
+    private String projectName;
 }

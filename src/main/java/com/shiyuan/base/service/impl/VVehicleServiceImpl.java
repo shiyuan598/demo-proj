@@ -1,11 +1,14 @@
 package com.shiyuan.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.shiyuan.base.entity.VVehicle;
 import com.shiyuan.base.entity.converter.VehicleConverter;
 import com.shiyuan.base.entity.vo.vehicle.VVehicleDictVO;
+import com.shiyuan.base.entity.vo.vehicle.VVehicleVO;
 import com.shiyuan.base.mapper.VVehicleMapper;
 import com.shiyuan.base.service.VVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,9 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
     implements VVehicleService{
 
     @Autowired
+    VVehicleMapper vVehicleMapper;
+
+    @Autowired
     private VehicleConverter vehicleConverter;
 
     @Transactional(readOnly = true)
@@ -39,6 +45,13 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
         List<VVehicle> vehicleList = this.list(wrapper);
         return vehicleConverter.toDictVOList(vehicleList);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order) {
+        Page<VVehicleVO> page = new Page<>(currentPage, pageSize);
+        return vVehicleMapper.selectVehiclePage(page, blurry, sort, order);
     }
 }
 

@@ -20,4 +20,41 @@
         place,state,create_time,
         reason,maintainer
     </sql>
+    <select id="selectVehiclePage" resultType="com.shiyuan.base.entity.vo.vehicle.VVehicleVO">
+        SELECT
+        v.id,
+        v.vehicle_no AS vehicleNo,
+        v.state,
+        CASE WHEN v.state = 0 THEN '不可用' ELSE '可用' END AS stateName,
+        v.project,
+        p.name AS projectName
+        FROM
+        v_vehicle v
+        LEFT JOIN
+        v_project p ON v.project = p.id
+        <where>
+            <if test="blurry != null and blurry != ''">
+                (v.vehicle_no LIKE CONCAT('%', #{blurry}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort != ''">
+                ORDER BY
+                <choose>
+                    <when test="sort == 'vehicleno'">v.vehicle_no</when>
+                    <when test="sort == 'state'">v.state</when>
+                    <otherwise>v.id</otherwise>
+                </choose>
+                <if test="order != null and order.toLowerCase() == 'desc'">
+                    DESC
+                </if>
+                <if test="order == null or order.toLowerCase() != 'desc'">
+                    ASC
+                </if>
+            </when>
+            <otherwise>
+                ORDER BY v.id DESC
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

@@ -1,7 +1,9 @@
 package com.shiyuan.base.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.shiyuan.base.entity.vo.vehicle.VVehicleDictVO;
 import com.shiyuan.base.entity.vo.vehicle.VVehicleListResponse;
+import com.shiyuan.base.entity.vo.vehicle.VVehicleVO;
 import com.shiyuan.base.service.VVehicleService;
 import com.shiyuan.base.util.ResponseResult;
 import com.shiyuan.base.util.ResultCode;
@@ -37,6 +39,23 @@ public class VehicleController {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.getDictVO(blurry)));
         } catch (Exception e) {
             log.error("查询可用车辆列表失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "车辆分页列表")
+    @GetMapping
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VVehicleListResponse.class)))
+    public ResponseEntity<ResponseResult<List<VVehicleVO>>> getVehiclePage(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
+                                                                           @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long currentPage,
+                                                                           @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") long pageSize,
+                                                                           @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
+                                                                           @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
+        try {
+            IPage<VVehicleVO> pageVO = vehicleService.getVehiclePage(blurry, currentPage, pageSize, sort, order);
+            return ResponseEntity.ok(ResponseResult.success(pageVO));
+        } catch (Exception e) {
+            log.error("查询用户分页列表失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
         }
     }

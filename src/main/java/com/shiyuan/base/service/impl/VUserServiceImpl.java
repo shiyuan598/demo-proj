@@ -60,8 +60,8 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
             default         -> wrapper.orderByDesc(VUser::getId);
         }
 
-        IPage<VUser> page = this.page(new Page<>(currentPage, pageSize), wrapper);
-        return PageConverter.convert(page, userConverter::toVO);
+        IPage<VUser> pageData = this.page(new Page<>(currentPage, pageSize), wrapper);
+        return PageConverter.convert(pageData, userConverter::toVO);
     }
 }
 
