@@ -10,6 +10,7 @@ import com.shiyuan.base.mapper.VVehicleMapper;
 import com.shiyuan.base.service.VVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
     @Autowired
     private VehicleConverter vehicleConverter;
 
+    @Transactional(readOnly = true)
     @Override
     public List<VVehicleDictVO> getDictVO(String blurry) {
         LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();

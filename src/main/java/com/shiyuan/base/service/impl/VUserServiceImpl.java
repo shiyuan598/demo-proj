@@ -14,6 +14,7 @@ import com.shiyuan.base.util.PageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -30,6 +31,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     @Autowired
     private UserConverter userConverter;
 
+    @Transactional
     @Override
     public boolean forgetPassword(String username, String telephone, String newPassword) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
@@ -42,6 +44,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
         return false;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
