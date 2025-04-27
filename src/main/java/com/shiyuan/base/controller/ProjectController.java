@@ -2,7 +2,8 @@ package com.shiyuan.base.controller;
 
 import com.shiyuan.base.entity.VProject;
 import com.shiyuan.base.service.VProjectService;
-import com.shiyuan.base.util.ResponseUtils;
+import com.shiyuan.base.util.ResponseResult;
+import com.shiyuan.base.util.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,13 +29,13 @@ public class ProjectController {
     @Operation(summary = "所属项目")
     @GetMapping("/dict")
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VProject.class)))
-    public ResponseEntity<ResponseUtils> dict() {
+    public ResponseEntity<ResponseResult<List<VProject>>> dict() {
         try {
             List<VProject> list = projectService.list();
-            return ResponseUtils.success(list);
+            return ResponseEntity.ok(ResponseResult.success(list));
         } catch (Exception e) {
             log.error("查询所属项目异常: {}", e.getMessage(), e);
-            return ResponseUtils.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
         }
     }
 }

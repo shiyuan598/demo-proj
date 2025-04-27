@@ -1,0 +1,53 @@
+package com.shiyuan.base.util;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.Data;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Data
+public class ResponseResult<T> {
+    private boolean success;
+    private int code;
+    private String message;
+    private T data;
+    private Map<String, Object> pagination;
+
+    private ResponseResult() {}
+
+    private ResponseResult(boolean success, int code, String message, T data, Map<String, Object> pagination) {
+        this.success = success;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+        this.pagination = pagination;
+    }
+
+    public static <T> ResponseResult<T> success(T data) {
+        return new ResponseResult<>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data, null);
+    }
+
+    public static <T> ResponseResult<List<T>> page(IPage<T> page) {
+        Map<String, Object> pagination = new HashMap<>();
+        pagination.put("current", page.getCurrent());
+        pagination.put("size", page.getSize());
+        pagination.put("total", page.getTotal());
+        pagination.put("pages", page.getPages());
+        return new ResponseResult<>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), page.getRecords(), pagination);
+    }
+
+    public static <T> ResponseResult<T> fail(ResultCode resultCode) {
+        return new ResponseResult<>(false, resultCode.getCode(), resultCode.getMessage(), null, null);
+    }
+
+    public static <T> ResponseResult<T> fail(ResultCode resultCode, String message) {
+        String finalMessage = (message != null) ? message : resultCode.getMessage();
+        return new ResponseResult<>(false, resultCode.getCode(), finalMessage, null, null);
+    }
+
+    public static <T> ResponseResult<T> error(ResultCode resultCode) {
+        return new ResponseResult<>(false, resultCode.getCode(), resultCode.getMessage(), null, null);
+    }
+}
