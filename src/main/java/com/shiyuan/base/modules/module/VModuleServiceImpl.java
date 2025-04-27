@@ -1,6 +1,7 @@
 package com.shiyuan.base.modules.module;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiyuan.base.modules.module.mapper.VModuleMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 

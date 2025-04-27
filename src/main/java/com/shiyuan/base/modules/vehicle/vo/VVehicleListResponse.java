@@ -1,6 +1,6 @@
 package com.shiyuan.base.modules.vehicle.vo;
 
-import com.shiyuan.base.common.utils.BaseResponse;
+import com.shiyuan.base.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

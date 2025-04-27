@@ -1,6 +1,7 @@
-package com.shiyuan.base.modules.order;
+package com.shiyuan.base.modules.order.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shiyuan.base.modules.order.VOrder;
 
 /**
 * @author wangshiyuan

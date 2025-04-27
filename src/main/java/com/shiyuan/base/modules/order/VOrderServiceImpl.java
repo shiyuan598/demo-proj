@@ -1,6 +1,7 @@
 package com.shiyuan.base.modules.order;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiyuan.base.modules.order.mapper.VOrderMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 

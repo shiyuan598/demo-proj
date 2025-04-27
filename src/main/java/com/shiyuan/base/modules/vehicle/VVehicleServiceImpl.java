@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.shiyuan.base.modules.vehicle.mapper.VVehicleMapper;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
 import org.springframework.beans.factory.annotation.Autowired;

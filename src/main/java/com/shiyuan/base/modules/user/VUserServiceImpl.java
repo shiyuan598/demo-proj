@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.shiyuan.base.modules.user.mapper.VUserMapper;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import com.shiyuan.base.common.utils.PageConverter;
 import org.springframework.beans.factory.annotation.Autowired;

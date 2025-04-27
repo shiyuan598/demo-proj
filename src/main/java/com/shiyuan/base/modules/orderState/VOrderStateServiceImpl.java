@@ -1,6 +1,7 @@
 package com.shiyuan.base.modules.orderState;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiyuan.base.modules.orderState.mapper.VOrderStateMapper;
 import com.shiyuan.base.service.VOrderStateService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

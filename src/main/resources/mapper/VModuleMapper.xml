@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shiyuan.base.modules.module.VModuleMapper">
+<mapper namespace="com.shiyuan.base.modules.module.mapper.VModuleMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.module.VModule">
             <id property="id" column="id" jdbcType="INTEGER"/>

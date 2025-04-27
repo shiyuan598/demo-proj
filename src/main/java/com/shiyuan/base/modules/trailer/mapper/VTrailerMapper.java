@@ -1,6 +1,7 @@
-package com.shiyuan.base.modules.trailer;
+package com.shiyuan.base.modules.trailer.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shiyuan.base.modules.trailer.VTrailer;
 
 /**
 * @author wangshiyuan

@@ -3,7 +3,7 @@ package com.shiyuan.base.modules.user;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
-import com.shiyuan.base.common.utils.BaseResponse;
+import com.shiyuan.base.common.response.BaseResponse;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import com.shiyuan.base.modules.user.vo.VUserVOListResponse;
 import com.shiyuan.base.modules.user.vo.VUserVOPageResponse;

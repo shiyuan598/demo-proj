@@ -1,6 +1,7 @@
-package com.shiyuan.base.modules.orderState;
+package com.shiyuan.base.modules.orderState.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shiyuan.base.modules.orderState.VOrderState;
 
 /**
 * @author wangshiyuan

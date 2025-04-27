@@ -1,8 +1,9 @@
-package com.shiyuan.base.modules.vehicle;
+package com.shiyuan.base.modules.vehicle.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shiyuan.base.modules.vehicle.VVehicle;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,6 +1,7 @@
-package com.shiyuan.base.modules.user;
+package com.shiyuan.base.modules.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shiyuan.base.modules.user.VUser;
 
 /**
 * @author wangshiyuan
