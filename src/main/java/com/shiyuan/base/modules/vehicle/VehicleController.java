@@ -33,7 +33,9 @@ public class VehicleController {
 
     @Operation(summary = "可用车辆列表")
     @GetMapping("/list")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VVehicleListResponse.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseResult.class)))
     public ResponseEntity<ResponseResult<List<VVehicleDictVO>>> list(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.getDictVO(blurry)));
@@ -62,7 +64,7 @@ public class VehicleController {
 
     @Operation(summary = "车辆总数")
     @GetMapping("/count")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseResult.class, type = "long")))
     public ResponseEntity<ResponseResult<Long>> count(@Parameter(description = "状态") @RequestParam(required = false) Integer state) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.getCount(state)));

@@ -1,6 +1,7 @@
 package com.shiyuan.base.common.response;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -8,11 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@Schema(description = "响应结果封装")
 public class ResponseResult<T> {
+    @Schema(description = "成功标识")
     private boolean success;
+    @Schema(description = "响应状态码")
     private int code;
+    @Schema(description = "响应信息")
     private String message;
+    @Schema(description = "响应数据")
     private T data;
+    @Schema(description = "分页信息")
     private Map<String, Object> pagination;
 
     private ResponseResult(boolean success, int code, String message, T data, Map<String, Object> pagination) {
