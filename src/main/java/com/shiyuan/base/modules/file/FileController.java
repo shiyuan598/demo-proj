@@ -62,15 +62,15 @@ public class FileController {
 
     @Operation(summary = "下载文件")
     @GetMapping("/download")
-    public ResponseEntity<ResponseResult<Resource>> download(@Parameter(description = "文件名") @RequestParam String filename) {
+    public ResponseEntity<Resource> download(@Parameter(description = "文件名") @RequestParam String filename) {
         if (filename == null || filename.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR));
+            return ResponseEntity.badRequest().body(null);
         }
 
         try {
             Path path = Paths.get(UPLOAD_DIR + filename);
             if (!Files.exists(path)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseResult.fail(ResultCode.NOT_FOUND, "文件不存在"));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
             // 根据文件后缀设置文件类型
@@ -84,10 +84,10 @@ public class FileController {
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.parseMediaType(contentType))
-                    .body(ResponseResult.success(resource));
+                    .body(resource);
         } catch (IOException e) {
             log.error("文件下载失败: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
