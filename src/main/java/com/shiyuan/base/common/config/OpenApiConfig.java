@@ -23,7 +23,7 @@ import java.util.*;
 public class OpenApiConfig {
     private static final String SECURITY_SCHEME_NAME = "Authorization";
     // 定义不需要api-doc上显示请求头Authorization输入框的路径数组(文档层面的配置，SecurityConfig中仍需要配置permitAll)
-    private static final String[] EXCLUDED_PATHS = {"/auth/**", "/vehicle/count"};
+    private static final String[] EXCLUDED_PATHS = {"/auth/**"};
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Bean

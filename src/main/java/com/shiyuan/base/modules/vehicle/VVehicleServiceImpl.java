@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.mapper.VVehicleMapper;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
@@ -51,6 +53,49 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
     public IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order) {
         Page<VVehicleVO> page = new Page<>(currentPage, pageSize);
         return vVehicleMapper.selectVehiclePage(page, blurry, sort, order);
+    }
+
+    @Transactional
+    @Override
+    public Long getCount(Integer state) {
+        LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
+        if (state != null) {
+            wrapper.eq(VVehicle::getState, state);
+        }
+        return this.count(wrapper);
+    }
+
+    @Override
+    public Boolean addVehicle(VVehicleAddDTO vehicleDTO) {
+        VVehicle vehicle = vehicleConverter.toEntity(vehicleDTO);
+        LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(VVehicle::getVehicleNo, vehicle.getVehicleNo());
+        long count = this.count(wrapper);
+        if (count > 0) {
+            throw new IllegalArgumentException("车辆编号已存在");
+        }
+        return this.save(vehicle);
+    }
+
+    @Override
+    public Boolean updateVehicle(Integer id, VVehicleUpdateDTO vehicle) {
+        VVehicle existingVehicle = this.getById(id);
+        if (existingVehicle == null) {
+            throw new IllegalArgumentException("车辆不存在");
+        }
+        // 校验 vehicleNo 是否已存在（除自己以外）
+        if (vehicle.getVehicleNo() != null) {
+            boolean vehicleNoExists = this.lambdaQuery()
+                    .eq(VVehicle::getVehicleNo, vehicle.getVehicleNo())
+                    .ne(VVehicle::getId, id) // 排除自己
+                    .exists();
+            if (vehicleNoExists) {
+                throw new IllegalArgumentException("车辆编号已存在");
+            }
+        }
+        // 只复制有值的字段
+        vehicleConverter.updateVehicleFromDto(vehicle, existingVehicle);
+        return this.updateById(existingVehicle);
     }
 }
 

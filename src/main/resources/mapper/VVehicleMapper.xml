@@ -27,11 +27,14 @@
         v.state,
         CASE WHEN v.state = 0 THEN '不可用' ELSE '可用' END AS stateName,
         v.project,
-        p.name AS projectName
+        p.name AS projectName,
+        maintainer, u.name as maintainerName
         FROM
         v_vehicle v
         LEFT JOIN
         v_project p ON v.project = p.id
+        LEFT JOIN
+        v_user u on v.maintainer = u.id
         <where>
             <if test="blurry != null and blurry != ''">
                 (v.vehicle_no LIKE CONCAT('%', #{blurry}, '%'))

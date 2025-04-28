@@ -9,4 +9,5 @@ import lombok.Data;
 public class VVehicleVO extends VVehicle {
     private String stateName;
     private String projectName;
+    private String maintainerName;
 }

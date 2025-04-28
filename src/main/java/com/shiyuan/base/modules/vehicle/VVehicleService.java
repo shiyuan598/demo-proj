@@ -2,6 +2,8 @@ package com.shiyuan.base.modules.vehicle;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,4 +20,11 @@ public interface VVehicleService extends IService<VVehicle> {
 
     @Transactional(readOnly = true)
     IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order);
+
+    @Transactional
+    Long getCount(Integer state);
+
+    Boolean addVehicle(VVehicleAddDTO vehicle);
+
+    Boolean updateVehicle(Integer id, VVehicleUpdateDTO vehicle);
 }

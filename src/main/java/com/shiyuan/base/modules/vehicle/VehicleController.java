@@ -1,24 +1,25 @@
 package com.shiyuan.base.modules.vehicle;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.shiyuan.base.common.response.ResponseResult;
+import com.shiyuan.base.common.response.ResultCode;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
+import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleListResponse;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
-import com.shiyuan.base.common.response.ResponseResult;
-import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -54,7 +55,64 @@ public class VehicleController {
             IPage<VVehicleVO> pageVO = vehicleService.getVehiclePage(blurry, currentPage, pageSize, sort, order);
             return ResponseEntity.ok(ResponseResult.success(pageVO));
         } catch (Exception e) {
-            log.error("查询用户分页列表失败: {}", e.getMessage(), e);
+            log.error("查询车辆分页列表失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "车辆总数")
+    @GetMapping("/count")
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    public ResponseEntity<ResponseResult<Long>> count(@Parameter(description = "状态") @RequestParam(required = false) Integer state) {
+        try {
+            return ResponseEntity.ok(ResponseResult.success(vehicleService.getCount(state)));
+        } catch (Exception e) {
+            log.error("查询车辆总数失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "添加车辆")
+    @PostMapping
+    @Validated
+    @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    public ResponseEntity<ResponseResult<Boolean>> addVehicle(@Parameter(description = "车辆实体") @Valid @RequestBody VVehicleAddDTO vehicle) {
+        try {
+            return ResponseEntity.ok(ResponseResult.success(vehicleService.addVehicle(vehicle)));
+        } catch(IllegalArgumentException e) {
+            log.error("添加车辆失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
+        } catch (Exception e) {
+            log.error("添加车辆失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "编辑车辆")
+    @PutMapping("/{id}")
+    @Validated
+    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    public ResponseEntity<ResponseResult<Boolean>> updateVehicle(@Parameter(description = "车辆Id") @PathVariable Integer id, @Valid @Parameter(description = "车辆实体") @RequestBody VVehicleUpdateDTO vehicle) {
+        try {
+            return ResponseEntity.ok(ResponseResult.success(vehicleService.updateVehicle(id, vehicle)));
+        } catch(IllegalArgumentException e) {
+            log.error("编辑车辆失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
+        } catch (Exception e) {
+            log.error("编辑车辆失败: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "删除车辆")
+    @DeleteMapping("/{id}")
+    @Validated
+    @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
+    public ResponseEntity<ResponseResult<Boolean>> deleteVehicle(@Parameter(description = "车辆Id") @PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(ResponseResult.success(vehicleService.removeById(id)));
+        } catch (Exception e) {
+            log.error("删除车辆失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
         }
     }
