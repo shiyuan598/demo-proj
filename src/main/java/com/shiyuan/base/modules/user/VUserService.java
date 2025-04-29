@@ -24,8 +24,8 @@ public interface VUserService extends IService<VUser> {
     IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order);
 
     @Transactional
-    Integer addUser(VUserAddDTO userAddDTO);
+    Long addUser(VUserAddDTO userAddDTO);
 
     @Transactional
-    VUserVO updateUser(int id, VUserUpdateDTO userUpdateDTO);
+    VUserVO updateUser(long id, VUserUpdateDTO userUpdateDTO);
 }

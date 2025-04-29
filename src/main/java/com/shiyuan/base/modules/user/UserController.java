@@ -88,7 +88,7 @@ public class UserController {
     @PostMapping
     @Validated
     @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<Integer>> addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO vUserDTO) {
+    public ResponseEntity<ResponseResult<Long>> addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO vUserDTO) {
         try {
             return ResponseEntity.ok(ResponseResult.success(userService.addUser(vUserDTO)));
         } catch(IllegalArgumentException e) {
@@ -103,7 +103,7 @@ public class UserController {
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable Integer id,
+    public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable long id,
                                                               @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO vUserDTO) {
         try {
             return ResponseEntity.ok(ResponseResult.success(userService.updateUser(id, vUserDTO)));
@@ -119,7 +119,7 @@ public class UserController {
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<Boolean>> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<ResponseResult<Boolean>> deleteUser(@PathVariable long id) {
         try {
             return ResponseEntity.ok(ResponseResult.success(userService.removeById(id)));
         } catch (Exception e) {

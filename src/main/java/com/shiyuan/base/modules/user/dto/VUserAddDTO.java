@@ -18,5 +18,5 @@ public class VUserAddDTO extends BaseDTO {
     @NotBlank(message = "密码不能为空")
     private String telephone;
     @NotNull(message = "角色不能为空")
-    private Integer role;
+    private Long role;
 }

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class VVehicleUpdateDTO extends BaseDTO {
-    private Integer id;
+    private Long id;
 
     private String vehicleNo;
 

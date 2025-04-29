@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Schema(description = "车辆字典")
 public class VVehicleDictVO {
-    private Integer id;
+    private Long id;
 
     private String vehicleNo;
 

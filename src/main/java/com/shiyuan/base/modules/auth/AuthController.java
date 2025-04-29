@@ -1,6 +1,8 @@
 package com.shiyuan.base.modules.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shiyuan.base.modules.permission.entity.VUserRole;
+import com.shiyuan.base.modules.permission.service.VUserRoleService;
 import com.shiyuan.base.modules.user.VUser;
 import com.shiyuan.base.modules.user.VUserService;
 import com.shiyuan.base.common.utils.JwtUtils;
@@ -25,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private VUserService userService;
+
+    @Autowired
+    private VUserRoleService userRoleService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -71,6 +76,10 @@ public class AuthController {
             String token = jwtUtils.generateToken(user.getUsername());
             user.setPassword(""); // 抹掉密码
             user.setToken(token);
+            VUserRole userRole = new VUserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(3L);
+            userRoleService.save(userRole);
             return ResponseEntity.ok(ResponseResult.success(user));
         } catch (Exception e) {
             log.error("注册用户异常: {}", e.getMessage(), e);

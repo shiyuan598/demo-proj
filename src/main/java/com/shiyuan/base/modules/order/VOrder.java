@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 public class VOrder {
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     private Integer subscriber;
 

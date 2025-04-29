@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Schema(description = "用户")
 public class VUserVO {
-    private Integer id;
+    private Long id;
     private String name;
     private String username;
     private String telephone;

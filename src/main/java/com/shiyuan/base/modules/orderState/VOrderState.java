@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class VOrderState {
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     private Integer state;
 

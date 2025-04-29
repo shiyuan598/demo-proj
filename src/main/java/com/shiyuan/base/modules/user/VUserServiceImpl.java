@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.shiyuan.base.common.utils.PageConverter;
+import com.shiyuan.base.modules.permission.service.VUserRoleService;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.mapper.VUserMapper;
@@ -32,6 +33,9 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserConverter userConverter;
+
+    @Autowired
+    private VUserRoleService userRoleService;
 
     @Transactional
     @Override
@@ -81,22 +85,26 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
 
     @Transactional
     @Override
-    public Integer addUser(VUserAddDTO userAddDTO) {
+    public Long addUser(VUserAddDTO userAddDTO) {
         VUser user = userConverter.toEntity(userAddDTO);
         user.setPassword(passwordEncoder.encode(userAddDTO.getPassword()));
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VUser::getUsername, userAddDTO.getUsername());
-        long count = this.count(wrapper);
-        if (count > 0) {
+        if (this.exists(wrapper)) {
             throw new IllegalArgumentException("用户名已存在");
         }
-        this.save(user);
+        boolean userSaved = this.save(user);
+        if (!userSaved) {
+            throw new IllegalStateException("用户保存失败");
+        }
+        // 成功后再更新角色
+        userRoleService.updateUserRole(user.getId(), userAddDTO.getRole());
         return user.getId();
     }
 
     @Transactional
     @Override
-    public VUserVO updateUser(int id, VUserUpdateDTO userUpdateDTO) {
+    public VUserVO updateUser(long id, VUserUpdateDTO userUpdateDTO) {
         VUser existingUser = this.getById(id);
         if (existingUser == null) {
             throw new IllegalArgumentException("用户不存在");
@@ -114,7 +122,14 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
             userUpdateDTO.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
         }
         userConverter.updateEntityFromDto(userUpdateDTO, existingUser);
-        this.updateById(existingUser);
+        boolean userSaved = this.updateById(existingUser);
+        if (!userSaved) {
+            throw new IllegalStateException("用户保存失败");
+        }
+        // 成功后再更新角色
+        if (userUpdateDTO.getRole() != null) {
+            userRoleService.updateUserRole(id, userUpdateDTO.getRole());
+        }
         return userConverter.toVO(existingUser);
     }
 }

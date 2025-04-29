@@ -7,10 +7,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class VUserUpdateDTO extends BaseDTO {
-    private Integer id;
+    private Long id;
     private String name;
     private String username;
     private String password;
     private String telephone;
-    private Integer role;
+    private Long role;
 }

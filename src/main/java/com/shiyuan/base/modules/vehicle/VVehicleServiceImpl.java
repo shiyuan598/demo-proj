@@ -67,12 +67,11 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional
     @Override
-    public Integer addVehicle(VVehicleAddDTO vehicleDTO) {
+    public Long addVehicle(VVehicleAddDTO vehicleDTO) {
         VVehicle vehicle = vehicleConverter.toEntity(vehicleDTO);
         LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VVehicle::getVehicleNo, vehicle.getVehicleNo());
-        long count = this.count(wrapper);
-        if (count > 0) {
+        if (this.exists(wrapper)) {
             throw new IllegalArgumentException("车辆编号已存在");
         }
         this.save(vehicle);
@@ -81,7 +80,7 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional
     @Override
-    public VVehicle updateVehicle(Integer id, VVehicleUpdateDTO vehicle) {
+    public VVehicle updateVehicle(long id, VVehicleUpdateDTO vehicle) {
         VVehicle existingVehicle = this.getById(id);
         if (existingVehicle == null) {
             throw new IllegalArgumentException("车辆不存在");

@@ -78,7 +78,7 @@ public class VehicleController {
     @PostMapping
     @Validated
     @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
-    public ResponseEntity<ResponseResult<Integer>> addVehicle(@Parameter(description = "车辆实体") @Valid @RequestBody VVehicleAddDTO vehicle) {
+    public ResponseEntity<ResponseResult<Long>> addVehicle(@Parameter(description = "车辆实体") @Valid @RequestBody VVehicleAddDTO vehicle) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.addVehicle(vehicle)));
         } catch(IllegalArgumentException e) {
@@ -94,7 +94,7 @@ public class VehicleController {
     @PutMapping("/{id}")
     @Validated
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
-    public ResponseEntity<ResponseResult<VVehicle>> updateVehicle(@Parameter(description = "车辆Id") @PathVariable Integer id, @Valid @Parameter(description = "车辆实体") @RequestBody VVehicleUpdateDTO vehicle) {
+    public ResponseEntity<ResponseResult<VVehicle>> updateVehicle(@Parameter(description = "车辆Id") @PathVariable long id, @Valid @Parameter(description = "车辆实体") @RequestBody VVehicleUpdateDTO vehicle) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.updateVehicle(id, vehicle)));
         } catch(IllegalArgumentException e) {
@@ -110,7 +110,7 @@ public class VehicleController {
     @DeleteMapping("/{id}")
     @Validated
     @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
-    public ResponseEntity<ResponseResult<Boolean>> deleteVehicle(@Parameter(description = "车辆Id") @PathVariable Integer id) {
+    public ResponseEntity<ResponseResult<Boolean>> deleteVehicle(@Parameter(description = "车辆Id") @PathVariable long id) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.removeById(id)));
         } catch (Exception e) {

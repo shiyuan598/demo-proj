@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class VVehicle {
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     private String vehicleNo;
 

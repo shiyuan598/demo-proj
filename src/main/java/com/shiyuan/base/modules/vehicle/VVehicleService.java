@@ -24,7 +24,7 @@ public interface VVehicleService extends IService<VVehicle> {
     @Transactional
     long getCount(Integer state);
 
-    Integer addVehicle(VVehicleAddDTO vehicle);
+    Long addVehicle(VVehicleAddDTO vehicle);
 
-    VVehicle updateVehicle(Integer id, VVehicleUpdateDTO vehicle);
+    VVehicle updateVehicle(long id, VVehicleUpdateDTO vehicle);
 }
