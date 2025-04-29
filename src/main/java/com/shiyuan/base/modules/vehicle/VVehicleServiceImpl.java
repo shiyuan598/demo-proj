@@ -55,9 +55,9 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         return vVehicleMapper.selectVehiclePage(page, blurry, sort, order);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public Long getCount(Integer state) {
+    public long getCount(Integer state) {
         LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
         if (state != null) {
             wrapper.eq(VVehicle::getState, state);
@@ -65,8 +65,9 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         return this.count(wrapper);
     }
 
+    @Transactional
     @Override
-    public Boolean addVehicle(VVehicleAddDTO vehicleDTO) {
+    public Integer addVehicle(VVehicleAddDTO vehicleDTO) {
         VVehicle vehicle = vehicleConverter.toEntity(vehicleDTO);
         LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VVehicle::getVehicleNo, vehicle.getVehicleNo());
@@ -74,11 +75,13 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         if (count > 0) {
             throw new IllegalArgumentException("车辆编号已存在");
         }
-        return this.save(vehicle);
+        this.save(vehicle);
+        return vehicle.getId();
     }
 
+    @Transactional
     @Override
-    public Boolean updateVehicle(Integer id, VVehicleUpdateDTO vehicle) {
+    public VVehicle updateVehicle(Integer id, VVehicleUpdateDTO vehicle) {
         VVehicle existingVehicle = this.getById(id);
         if (existingVehicle == null) {
             throw new IllegalArgumentException("车辆不存在");
@@ -95,7 +98,8 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         }
         // 只复制有值的字段
         vehicleConverter.updateVehicleFromDto(vehicle, existingVehicle);
-        return this.updateById(existingVehicle);
+        this.updateById(existingVehicle);
+        return existingVehicle;
     }
 }
 

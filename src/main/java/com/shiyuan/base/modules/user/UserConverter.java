@@ -1,6 +1,8 @@
 package com.shiyuan.base.modules.user;
 
 
+import com.shiyuan.base.modules.user.dto.VUserAddDTO;
+import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import org.mapstruct.*;
 
@@ -10,7 +12,7 @@ import java.util.List;
 public interface UserConverter {
     // DTO 转 Entity
     @Mapping(target = "token", ignore = true)
-    VUser toEntity(VUserDTO userDTO);
+    VUser toEntity(VUserAddDTO userDTO);
 
     // Entity 转 VO
     VUserVO toVO(VUser user);
@@ -20,5 +22,5 @@ public interface UserConverter {
 
     // 部分更新 Entity
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDto(VUserDTO userDTO, @MappingTarget VUser user);
+    void updateEntityFromDto(VUserUpdateDTO userDTO, @MappingTarget VUser user);
 }

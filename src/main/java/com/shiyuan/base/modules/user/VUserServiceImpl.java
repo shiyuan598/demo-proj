@@ -5,15 +5,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.shiyuan.base.common.utils.PageConverter;
+import com.shiyuan.base.modules.user.dto.VUserAddDTO;
+import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.mapper.VUserMapper;
 import com.shiyuan.base.modules.user.vo.VUserVO;
-import com.shiyuan.base.common.utils.PageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,6 +48,19 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
 
     @Transactional(readOnly = true)
     @Override
+    public List<VUserVO> getDrivers(String blurry) {
+        LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(VUser::getUsername, blurry);
+        wrapper.eq(VUser::getRole, 2);
+        if (StrUtil.isNotBlank(blurry)) {
+            wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
+        }
+        List<VUser> drivers = this.list(wrapper);
+        return userConverter.toVOList(drivers);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         if (StrUtil.isNotBlank(blurry)) {
@@ -62,8 +78,43 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
         IPage<VUser> pageData = this.page(new Page<>(currentPage, pageSize), wrapper);
         return PageConverter.convert(pageData, userConverter::toVO);
     }
+
+    @Transactional
+    @Override
+    public Integer addUser(VUserAddDTO userAddDTO) {
+        VUser user = userConverter.toEntity(userAddDTO);
+        user.setPassword(passwordEncoder.encode(userAddDTO.getPassword()));
+        LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(VUser::getUsername, userAddDTO.getUsername());
+        long count = this.count(wrapper);
+        if (count > 0) {
+            throw new IllegalArgumentException("用户名已存在");
+        }
+        this.save(user);
+        return user.getId();
+    }
+
+    @Transactional
+    @Override
+    public VUserVO updateUser(int id, VUserUpdateDTO userUpdateDTO) {
+        VUser existingUser = this.getById(id);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
+        // 校验 username 是否已存在(除自己以外)
+        if (userUpdateDTO.getUsername() != null) {
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getUsername, userUpdateDTO.getUsername()).ne(VUser::getId, id);
+            boolean userNoExists = this.exists(wrapper);
+            if (userNoExists) {
+                throw new IllegalArgumentException("用户名已存在");
+            }
+        }
+        if (StrUtil.isNotBlank(userUpdateDTO.getPassword())) {
+            userUpdateDTO.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
+        }
+        userConverter.updateEntityFromDto(userUpdateDTO, existingUser);
+        this.updateById(existingUser);
+        return userConverter.toVO(existingUser);
+    }
 }
-
-
-
-

@@ -22,9 +22,9 @@ public interface VVehicleService extends IService<VVehicle> {
     IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order);
 
     @Transactional
-    Long getCount(Integer state);
+    long getCount(Integer state);
 
-    Boolean addVehicle(VVehicleAddDTO vehicle);
+    Integer addVehicle(VVehicleAddDTO vehicle);
 
-    Boolean updateVehicle(Integer id, VVehicleUpdateDTO vehicle);
+    VVehicle updateVehicle(Integer id, VVehicleUpdateDTO vehicle);
 }

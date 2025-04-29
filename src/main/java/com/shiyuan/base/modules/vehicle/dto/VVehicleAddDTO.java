@@ -1,13 +1,14 @@
 package com.shiyuan.base.modules.vehicle.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.shiyuan.base.common.dto.BaseDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class VVehicleAddDTO {
+public class VVehicleAddDTO extends BaseDTO {
     @NotBlank(message = "车辆编号不能为空")
     private String vehicleNo;
 
