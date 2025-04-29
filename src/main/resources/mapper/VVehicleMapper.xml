@@ -5,14 +5,14 @@
 <mapper namespace="com.shiyuan.base.modules.vehicle.mapper.VVehicleMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.vehicle.VVehicle">
-            <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="vehicleNo" column="vehicle_no" jdbcType="VARCHAR"/>
-            <result property="project" column="project" jdbcType="VARCHAR"/>
+            <result property="project" column="project" jdbcType="BIGINT"/>
             <result property="place" column="place" jdbcType="VARCHAR"/>
             <result property="state" column="state" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="reason" column="reason" jdbcType="VARCHAR"/>
-            <result property="maintainer" column="maintainer" jdbcType="INTEGER"/>
+            <result property="maintainer" column="maintainer" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

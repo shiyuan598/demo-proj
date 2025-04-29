@@ -5,24 +5,24 @@
 <mapper namespace="com.shiyuan.base.modules.order.mapper.VOrderMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.order.VOrder">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="subscriber" column="subscriber" jdbcType="INTEGER"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="subscriber" column="subscriber" jdbcType="BIGINT"/>
             <result property="subscribeNote" column="subscribe_note" jdbcType="VARCHAR"/>
-            <result property="module" column="module" jdbcType="INTEGER"/>
-            <result property="vehicleId" column="vehicle_id" jdbcType="INTEGER"/>
+            <result property="module" column="module" jdbcType="BIGINT"/>
+            <result property="vehicleId" column="vehicle_id" jdbcType="BIGINT"/>
             <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
             <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
             <result property="address" column="address" jdbcType="VARCHAR"/>
             <result property="purpose" column="purpose" jdbcType="VARCHAR"/>
             <result property="route" column="route" jdbcType="VARCHAR"/>
-            <result property="trailer" column="trailer" jdbcType="INTEGER"/>
+            <result property="trailer" column="trailer" jdbcType="BIGINT"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="approver" column="approver" jdbcType="INTEGER"/>
-            <result property="driver" column="driver" jdbcType="INTEGER"/>
-            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="approver" column="approver" jdbcType="BIGINT"/>
+            <result property="driver" column="driver" jdbcType="BIGINT"/>
+            <result property="state" column="state" jdbcType="BIGINT"/>
             <result property="comment" column="comment" jdbcType="VARCHAR"/>
-            <result property="inclinationDriver" column="inclination_driver" jdbcType="INTEGER"/>
+            <result property="inclinationDriver" column="inclination_driver" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

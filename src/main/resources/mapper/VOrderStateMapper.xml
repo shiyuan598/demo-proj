@@ -5,7 +5,7 @@
 <mapper namespace="com.shiyuan.base.modules.orderState.mapper.VOrderStateMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.orderState.VOrderState">
-            <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="state" column="state" jdbcType="INTEGER"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
     </resultMap>

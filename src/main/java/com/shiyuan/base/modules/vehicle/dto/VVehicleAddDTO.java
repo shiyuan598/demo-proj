@@ -12,8 +12,8 @@ public class VVehicleAddDTO extends BaseDTO {
     @NotBlank(message = "车辆编号不能为空")
     private String vehicleNo;
 
-    @NotBlank(message = "所属项目不能为空")
-    private String project;
+    @NotNull(message = "所属项目不能为空")
+    private Long project;
 
     @NotBlank(message = "地点不能为空")
     private String place;

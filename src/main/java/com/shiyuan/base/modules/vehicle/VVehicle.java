@@ -18,7 +18,7 @@ public class VVehicle {
 
     private String vehicleNo;
 
-    private String project;
+    private Long project;
 
     private String place;
 
@@ -28,5 +28,5 @@ public class VVehicle {
 
     private String reason;
 
-    private Integer maintainer;
+    private Long maintainer;
 }

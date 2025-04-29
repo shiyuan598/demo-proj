@@ -54,7 +54,6 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     @Override
     public List<VUserVO> getDrivers(String blurry) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(VUser::getUsername, blurry);
         wrapper.eq(VUser::getRole, 2);
         if (StrUtil.isNotBlank(blurry)) {
             wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);

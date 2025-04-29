@@ -10,7 +10,7 @@ public class VVehicleDictVO {
 
     private String vehicleNo;
 
-    private String project;
+    private Long project;
 
     private String place;
 

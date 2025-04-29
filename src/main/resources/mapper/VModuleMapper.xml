@@ -5,7 +5,7 @@
 <mapper namespace="com.shiyuan.base.modules.module.mapper.VModuleMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.module.VModule">
-            <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="pid" column="pid" jdbcType="INTEGER"/>
     </resultMap>

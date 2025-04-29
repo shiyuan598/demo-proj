@@ -5,7 +5,7 @@
 <mapper namespace="com.shiyuan.base.modules.user.mapper.VUserMapper">
 
     <resultMap id="BaseResultMap" type="com.shiyuan.base.modules.user.VUser">
-            <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>

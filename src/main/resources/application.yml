@@ -12,8 +12,8 @@ spring:
     name: demo-proj
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/vehicle
-    url: jdbc:mysql://172.16.18.123:3306/vehicle?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/vehicle_role?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+#    url: jdbc:mysql://172.16.18.123:3306/vehicle?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver

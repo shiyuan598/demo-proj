@@ -11,7 +11,7 @@ public class VVehicleUpdateDTO extends BaseDTO {
 
     private String vehicleNo;
 
-    private String project;
+    private Long project;
 
     private String place;
 
@@ -19,5 +19,5 @@ public class VVehicleUpdateDTO extends BaseDTO {
 
     private String reason;
 
-    private Integer maintainer;
+    private Long maintainer;
 }
