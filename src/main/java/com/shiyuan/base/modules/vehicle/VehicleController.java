@@ -49,8 +49,8 @@ public class VehicleController {
     @GetMapping
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VVehicleListResponse.class)))
     public ResponseEntity<ResponseResult<List<VVehicleVO>>> getVehiclePage(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
-                                                                           @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long currentPage,
-                                                                           @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") long pageSize,
+                                                                           @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Long currentPage,
+                                                                           @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Long pageSize,
                                                                            @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
                                                                            @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
         try {
@@ -94,7 +94,7 @@ public class VehicleController {
     @PutMapping("/{id}")
     @Validated
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
-    public ResponseEntity<ResponseResult<VVehicle>> updateVehicle(@Parameter(description = "车辆Id") @PathVariable long id, @Valid @Parameter(description = "车辆实体") @RequestBody VVehicleUpdateDTO vehicle) {
+    public ResponseEntity<ResponseResult<VVehicle>> updateVehicle(@Parameter(description = "车辆Id") @PathVariable Long id, @Valid @Parameter(description = "车辆实体") @RequestBody VVehicleUpdateDTO vehicle) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.updateVehicle(id, vehicle)));
         } catch(IllegalArgumentException e) {
@@ -110,7 +110,7 @@ public class VehicleController {
     @DeleteMapping("/{id}")
     @Validated
     @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
-    public ResponseEntity<ResponseResult<Boolean>> deleteVehicle(@Parameter(description = "车辆Id") @PathVariable long id) {
+    public ResponseEntity<ResponseResult<Boolean>> deleteVehicle(@Parameter(description = "车辆Id") @PathVariable Long id) {
         try {
             return ResponseEntity.ok(ResponseResult.success(vehicleService.removeById(id)));
         } catch (Exception e) {

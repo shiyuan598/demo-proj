@@ -71,8 +71,8 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOPageResponse.class)))
     public ResponseEntity<ResponseResult<List<VUserVO>>> getUserPage(
             @Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
-            @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long currentPage,
-            @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") long pageSize,
+            @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Long currentPage,
+            @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Long pageSize,
             @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
             @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
         try {
@@ -103,7 +103,7 @@ public class UserController {
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable long id,
+    public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable Long id,
                                                               @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO vUserDTO) {
         try {
             return ResponseEntity.ok(ResponseResult.success(userService.updateUser(id, vUserDTO)));
@@ -119,9 +119,9 @@ public class UserController {
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<Boolean>> deleteUser(@PathVariable long id) {
+    public ResponseEntity<ResponseResult<Boolean>> deleteUser(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(ResponseResult.success(userService.removeById(id)));
+            return ResponseEntity.ok(ResponseResult.success(userService.removeUserById(id)));
         } catch (Exception e) {
             log.error("删除用户失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));

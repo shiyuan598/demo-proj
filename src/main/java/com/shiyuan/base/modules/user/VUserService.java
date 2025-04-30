@@ -21,11 +21,14 @@ public interface VUserService extends IService<VUser> {
     @Transactional
     List<VUserVO> getDrivers(String blurry);
 
-    IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order);
+    IPage<VUserVO> getUserPage(String blurry, Long currentPage, Long pageSize, String sort, String order);
 
     @Transactional
     Long addUser(VUserAddDTO userAddDTO);
 
     @Transactional
-    VUserVO updateUser(long id, VUserUpdateDTO userUpdateDTO);
+    VUserVO updateUser(Long id, VUserUpdateDTO userUpdateDTO);
+
+    @Transactional
+    boolean removeUserById(Long id);
 }

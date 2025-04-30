@@ -11,6 +11,7 @@ import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.mapper.VUserMapper;
 import com.shiyuan.base.modules.user.vo.VUserVO;
+import com.shiyuan.base.modules.permission.entity.VUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,7 +65,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
 
     @Transactional(readOnly = true)
     @Override
-    public IPage<VUserVO> getUserPage(String blurry, long currentPage, long pageSize, String sort, String order) {
+    public IPage<VUserVO> getUserPage(String blurry, Long currentPage, Long pageSize, String sort, String order) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         if (StrUtil.isNotBlank(blurry)) {
             wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
@@ -72,6 +73,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
 
         boolean isAsc = !"desc".equalsIgnoreCase(order);
         switch (Objects.toString(sort, "id").toLowerCase()) {
+            case "id" -> wrapper.orderBy(true, isAsc, VUser::getId);
             case "username" -> wrapper.orderBy(true, isAsc, VUser::getUsername);
             case "role"     -> wrapper.orderBy(true, isAsc, VUser::getRole);
             case "name"     -> wrapper.orderBy(true, isAsc, VUser::getName);
@@ -92,18 +94,14 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
         if (this.exists(wrapper)) {
             throw new IllegalArgumentException("用户名已存在");
         }
-        boolean userSaved = this.save(user);
-        if (!userSaved) {
-            throw new IllegalStateException("用户保存失败");
-        }
-        // 成功后再更新角色
+        this.save(user);
         userRoleService.updateUserRole(user.getId(), userAddDTO.getRole());
         return user.getId();
     }
 
     @Transactional
     @Override
-    public VUserVO updateUser(long id, VUserUpdateDTO userUpdateDTO) {
+    public VUserVO updateUser(Long id, VUserUpdateDTO userUpdateDTO) {
         VUser existingUser = this.getById(id);
         if (existingUser == null) {
             throw new IllegalArgumentException("用户不存在");
@@ -121,14 +119,17 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
             userUpdateDTO.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
         }
         userConverter.updateEntityFromDto(userUpdateDTO, existingUser);
-        boolean userSaved = this.updateById(existingUser);
-        if (!userSaved) {
-            throw new IllegalStateException("用户保存失败");
-        }
-        // 成功后再更新角色
+        this.updateById(existingUser);
         if (userUpdateDTO.getRole() != null) {
             userRoleService.updateUserRole(id, userUpdateDTO.getRole());
         }
         return userConverter.toVO(existingUser);
+    }
+
+    @Transactional
+    @Override
+    public boolean removeUserById(Long id) {
+        userRoleService.remove(new LambdaQueryWrapper<VUserRole>().eq(VUserRole::getUserId, id));
+        return this.removeById(id);
     }
 }

@@ -50,7 +50,7 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional(readOnly = true)
     @Override
-    public IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order) {
+    public IPage<VVehicleVO> getVehiclePage(String blurry, Long currentPage, Long pageSize, String sort, String order) {
         Page<VVehicleVO> page = new Page<>(currentPage, pageSize);
         return vVehicleMapper.selectVehiclePage(page, blurry, sort, order);
     }
@@ -80,7 +80,7 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional
     @Override
-    public VVehicle updateVehicle(long id, VVehicleUpdateDTO vehicle) {
+    public VVehicle updateVehicle(Long id, VVehicleUpdateDTO vehicle) {
         VVehicle existingVehicle = this.getById(id);
         if (existingVehicle == null) {
             throw new IllegalArgumentException("车辆不存在");

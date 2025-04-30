@@ -19,12 +19,12 @@ public interface VVehicleService extends IService<VVehicle> {
     List<VVehicleDictVO> getDictVO(String blurry);
 
     @Transactional(readOnly = true)
-    IPage<VVehicleVO> getVehiclePage(String blurry, long currentPage, long pageSize, String sort, String order);
+    IPage<VVehicleVO> getVehiclePage(String blurry, Long currentPage, Long pageSize, String sort, String order);
 
     @Transactional
     long getCount(Integer state);
 
     Long addVehicle(VVehicleAddDTO vehicle);
 
-    VVehicle updateVehicle(long id, VVehicleUpdateDTO vehicle);
+    VVehicle updateVehicle(Long id, VVehicleUpdateDTO vehicle);
 }
