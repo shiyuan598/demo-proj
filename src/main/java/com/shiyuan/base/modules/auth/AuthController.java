@@ -1,13 +1,16 @@
 package com.shiyuan.base.modules.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.shiyuan.base.modules.permission.entity.VUserRole;
-import com.shiyuan.base.modules.permission.service.VUserRoleService;
-import com.shiyuan.base.modules.user.VUser;
-import com.shiyuan.base.modules.user.VUserService;
-import com.shiyuan.base.common.utils.JwtUtils;
 import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
+import com.shiyuan.base.common.utils.JwtUtils;
+import com.shiyuan.base.modules.permission.entity.VUserRole;
+import com.shiyuan.base.modules.permission.service.VRoleService;
+import com.shiyuan.base.modules.permission.service.VUserRoleService;
+import com.shiyuan.base.modules.user.UserConverter;
+import com.shiyuan.base.modules.user.VUser;
+import com.shiyuan.base.modules.user.VUserService;
+import com.shiyuan.base.modules.user.vo.VUserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +29,13 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @Autowired
+    private UserConverter userConverter;
+
+    @Autowired
     private VUserService userService;
+
+    @Autowired
+    private VRoleService roleService;
 
     @Autowired
     private VUserRoleService userRoleService;
@@ -36,7 +45,7 @@ public class AuthController {
 
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public ResponseEntity<ResponseResult<VUser>> login(@Parameter(description = "用户名") @RequestParam String username, @Parameter(description = "密码") @RequestParam String password) {
+    public ResponseEntity<ResponseResult<VUserVO>> login(@Parameter(description = "用户名") @RequestParam String username, @Parameter(description = "密码") @RequestParam String password) {
         try {
             // 查询用户信息
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
@@ -44,10 +53,16 @@ public class AuthController {
             VUser user =  userService.getOne(wrapper);
             if (user != null && passwordEncoder.matches(password, user.getPassword())) {
                 // 密码匹配，生成 JWT Token
-                String token = jwtUtils.generateToken(username);
-                user.setPassword(""); // 抹掉密码
-                user.setToken(token);
-                return ResponseEntity.ok(ResponseResult.success(user));
+                LoginUser loginUser = new LoginUser();
+                loginUser.setId(user.getId());
+                loginUser.setUsername(user.getUsername());
+                loginUser.setRole(roleService.getRoleCodeByUserId(user.getId()));
+                String token = jwtUtils.generateToken(loginUser);
+
+                // 转换VO
+                VUserVO userVO = userConverter.toVO(user);
+                userVO.setToken(token);
+                return ResponseEntity.ok(ResponseResult.success(userVO));
             } else {
                 return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR));
             }
@@ -59,7 +74,7 @@ public class AuthController {
 
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ResponseEntity<ResponseResult<VUser>> register(@Parameter(description = "用户信息") @RequestBody VUser user) {
+    public ResponseEntity<ResponseResult<VUserVO>> register(@Parameter(description = "用户信息") @RequestBody VUser user) {
         try {
             // 检查用户名是否已存在
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
@@ -72,15 +87,22 @@ public class AuthController {
             // 注册用户
             user.setPassword(passwordEncoder.encode(user.getPassword())); // 加密密码
             userService.save(user);
-            // 生成 JWT Token
-            String token = jwtUtils.generateToken(user.getUsername());
-            user.setPassword(""); // 抹掉密码
-            user.setToken(token);
+            // 设置角色
             VUserRole userRole = new VUserRole();
             userRole.setUserId(user.getId());
-            userRole.setRoleId(3L);
+            userRole.setRoleId(3L); // 注册用户默认为普通用户
             userRoleService.save(userRole);
-            return ResponseEntity.ok(ResponseResult.success(user));
+            // 生成 JWT Token
+            LoginUser loginUser = new LoginUser();
+            loginUser.setId(user.getId());
+            loginUser.setUsername(user.getUsername());
+            loginUser.setRole(roleService.getRoleCodeByUserId(user.getId()));
+            String token = jwtUtils.generateToken(loginUser);
+
+            // 转换VO
+            VUserVO userVO = userConverter.toVO(user);
+            userVO.setToken(token);
+            return ResponseEntity.ok(ResponseResult.success(userVO));
         } catch (Exception e) {
             log.error("注册用户异常: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));

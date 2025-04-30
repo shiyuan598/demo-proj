@@ -21,8 +21,4 @@ public class VUser {
     private String password;
 
     private String telephone;
-
-    private Integer role;
-
-    private String token;
 }

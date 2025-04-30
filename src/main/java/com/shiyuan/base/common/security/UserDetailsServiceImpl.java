@@ -1,6 +1,7 @@
 package com.shiyuan.base.common.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shiyuan.base.modules.permission.service.VRoleService;
 import com.shiyuan.base.modules.user.VUser;
 import com.shiyuan.base.modules.user.VUserService;
 import org.slf4j.Logger;
@@ -28,6 +29,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private VUserService userService;
 
+    @Autowired
+    private VRoleService roleService;
+
     public UserDetailsServiceImpl(VUserService userService) {
         this.userService = userService;
         logger.info("UserDetailsServiceImpl initialized with UserService: {}", userService.getClass().getName());
@@ -48,7 +52,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // 构建用户权限集合
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         // 这里简单假设用户角色信息存储在 VUser 的 role 字段，可根据实际情况调整
-        String role = "ROLE_" + vAppUser.getRole();
+        String role = "ROLE_" + roleService.getRoleCodeByUserId(vAppUser.getId());
         authorities.add(new SimpleGrantedAuthority(role));
 
         // 构建 Spring Security 的 UserDetails 对象

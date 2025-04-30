@@ -1,7 +1,8 @@
 package com.shiyuan.base.modules.permission.mapper;
 
-import com.shiyuan.base.modules.permission.entity.VRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shiyuan.base.modules.permission.entity.VRole;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author wangshiyuan
@@ -10,7 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity generator.domain.VRole
 */
 public interface VRoleMapper extends BaseMapper<VRole> {
-
+    String selectRoleCodeByUserId(@Param("userId") Long userId);
 }
 
 

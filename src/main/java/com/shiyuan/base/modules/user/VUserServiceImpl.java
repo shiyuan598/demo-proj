@@ -32,8 +32,12 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     implements VUserService{
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UserConverter userConverter;
+
+    @Autowired
+    private VUserMapper userMapper;
 
     @Autowired
     private VUserRoleService userRoleService;
@@ -54,13 +58,7 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
     @Transactional(readOnly = true)
     @Override
     public List<VUserVO> getDrivers(String blurry) {
-        LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(VUser::getRole, 2);
-        if (StrUtil.isNotBlank(blurry)) {
-            wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
-        }
-        List<VUser> drivers = this.list(wrapper);
-        return userConverter.toVOList(drivers);
+        return userMapper.getDrivers(blurry);
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +73,6 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
         switch (Objects.toString(sort, "id").toLowerCase()) {
             case "id" -> wrapper.orderBy(true, isAsc, VUser::getId);
             case "username" -> wrapper.orderBy(true, isAsc, VUser::getUsername);
-            case "role"     -> wrapper.orderBy(true, isAsc, VUser::getRole);
             case "name"     -> wrapper.orderBy(true, isAsc, VUser::getName);
             default         -> wrapper.orderByDesc(VUser::getId);
         }

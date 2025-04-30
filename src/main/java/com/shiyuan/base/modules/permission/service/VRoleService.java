@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2025-04-29 17:17:05
 */
 public interface VRoleService extends IService<VRole> {
-
+    String getRoleCodeByUserId(Long userId);
 }

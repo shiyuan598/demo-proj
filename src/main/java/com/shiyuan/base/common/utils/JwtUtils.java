@@ -1,5 +1,6 @@
 package com.shiyuan.base.common.utils;
 
+import com.shiyuan.base.modules.auth.LoginUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -26,22 +29,33 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(LoginUser loginUser) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", loginUser.getId());
+        claims.put("username", loginUser.getUsername());
+        claims.put("role", loginUser.getRole());
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
+                .setSubject(loginUser.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
+    public LoginUser parseToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject();
+
+        LoginUser loginUser = new LoginUser();
+        loginUser.setId(claims.get("id", Long.class));
+        loginUser.setUsername(claims.get("username", String.class));
+        loginUser.setRole(claims.get("role", String.class));
+
+        return loginUser;
     }
 
     public boolean validateToken(String token) {

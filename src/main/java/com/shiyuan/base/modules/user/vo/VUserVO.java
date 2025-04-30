@@ -10,5 +10,6 @@ public class VUserVO {
     private String name;
     private String username;
     private String telephone;
-    private Integer role;
+    private String role;
+    private String token;
 }

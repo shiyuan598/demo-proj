@@ -2,8 +2,9 @@ package com.shiyuan.base.modules.permission.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiyuan.base.modules.permission.entity.VRole;
-import com.shiyuan.base.modules.permission.service.VRoleService;
 import com.shiyuan.base.modules.permission.mapper.VRoleMapper;
+import com.shiyuan.base.modules.permission.service.VRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,7 +15,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class VRoleServiceImpl extends ServiceImpl<VRoleMapper, VRole>
     implements VRoleService{
+    @Autowired
+    private VRoleMapper roleMapper;
 
+    @Override
+    public String getRoleCodeByUserId(Long userId) {
+        return roleMapper.selectRoleCodeByUserId(userId);
+    }
 }
 
 

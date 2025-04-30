@@ -11,7 +11,6 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserConverter {
     // DTO 转 Entity
-    @Mapping(target = "token", ignore = true)
     VUser toEntity(VUserAddDTO userDTO);
 
     // Entity 转 VO

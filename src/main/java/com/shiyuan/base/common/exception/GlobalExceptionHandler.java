@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,6 +66,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ResponseResult<Object>> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseResult<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("无权限访问: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ResponseResult.fail(ResultCode.FORBIDDEN, "无权限访问，请联系管理员"));
     }
 
     /**
