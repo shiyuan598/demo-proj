@@ -10,14 +10,11 @@
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
-            <result property="role" column="role" jdbcType="INTEGER"/>
-            <result property="token" column="token" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,name,username,
-        password,telephone,role,
-        token
+        password,telephone
     </sql>
     <select id="getDrivers" resultType="com.shiyuan.base.modules.user.vo.VUserVO">
         select u.id, u.name, u.username, u.telephone, r.code as role

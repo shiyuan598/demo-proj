@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,17 +17,13 @@ public interface VUserService extends IService<VUser> {
 
     boolean forgetPassword(String username, String telephone, String newPassword);
 
-    @Transactional
     List<VUserVO> getDrivers(String blurry);
 
     IPage<VUserVO> getUserPage(String blurry, Long currentPage, Long pageSize, String sort, String order);
 
-    @Transactional
     Long addUser(VUserAddDTO userAddDTO);
 
-    @Transactional
     VUserVO updateUser(Long id, VUserUpdateDTO userUpdateDTO);
 
-    @Transactional
     boolean removeUserById(Long id);
 }

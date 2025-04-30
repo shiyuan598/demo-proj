@@ -85,7 +85,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "添加用户")
     @PostMapping
     @Validated

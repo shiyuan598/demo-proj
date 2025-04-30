@@ -6,7 +6,6 @@ import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
 import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,10 +17,8 @@ import java.util.List;
 public interface VVehicleService extends IService<VVehicle> {
     List<VVehicleDictVO> getDictVO(String blurry);
 
-    @Transactional(readOnly = true)
     IPage<VVehicleVO> getVehiclePage(String blurry, Long currentPage, Long pageSize, String sort, String order);
 
-    @Transactional
     long getCount(Integer state);
 
     Long addVehicle(VVehicleAddDTO vehicle);
