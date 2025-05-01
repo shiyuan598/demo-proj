@@ -8,6 +8,7 @@ import com.shiyuan.base.modules.permission.service.VUserRoleService;
 import com.shiyuan.base.modules.user.UserConverter;
 import com.shiyuan.base.modules.user.VUser;
 import com.shiyuan.base.modules.user.VUserService;
+import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,21 +48,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public VUserVO register(VUser user) {
+    public VUserVO register(VUserAddDTO userDto) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(VUser::getUsername, user.getUsername());
+        wrapper.eq(VUser::getUsername, userDto.getUsername());
         if (userService.count(wrapper) > 0) {
             throw new IllegalArgumentException("用户已存在");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        VUser user = userConverter.toEntity(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userService.save(user);
 
+        // 默认分配普通用户角色
         VUserRole userRole = new VUserRole();
         userRole.setUserId(user.getId());
-        userRole.setRoleId(3L); // 普通用户
+        userRole.setRoleId(userDto.getRole());
         userRoleService.save(userRole);
 
+        // 返回用户信息
         return buildLoginUserVO(user);
     }
 

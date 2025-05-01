@@ -2,7 +2,7 @@ package com.shiyuan.base.modules.auth;
 
 import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
-import com.shiyuan.base.modules.user.VUser;
+import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,7 +37,7 @@ public class AuthController {
 
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ResponseEntity<ResponseResult<VUserVO>> register(@Parameter(description = "用户信息") @RequestBody VUser user) {
+    public ResponseEntity<ResponseResult<VUserVO>> register(@Parameter(description = "用户信息") @RequestBody VUserAddDTO user) {
         try {
             VUserVO userVO = authService.register(user);
             return ResponseEntity.ok(ResponseResult.success(userVO));

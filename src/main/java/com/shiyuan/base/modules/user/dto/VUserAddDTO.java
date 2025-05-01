@@ -15,8 +15,8 @@ public class VUserAddDTO extends BaseDTO {
     private String username;
     @NotBlank(message = "密码不能为空")
     private String password;
-    @NotBlank(message = "密码不能为空")
+    @NotBlank(message = "电话不能为空")
     private String telephone;
     @NotNull(message = "角色不能为空")
-    private Long role;
+    private Long role = 3L;
 }
