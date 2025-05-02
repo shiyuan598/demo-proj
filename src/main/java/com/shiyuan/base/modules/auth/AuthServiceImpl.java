@@ -11,6 +11,11 @@ import com.shiyuan.base.modules.user.VUserService;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private UserConverter userConverter;
@@ -37,14 +45,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VUserVO login(String username, String password) {
-        LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(VUser::getUsername, username);
-        VUser user = userService.getOne(wrapper);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return buildLoginUserVO(user);
-        }
+        try {
+            // 调用 Spring Security 验证用户名密码（会走 UserDetailsServiceImpl）
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
 
-        throw new IllegalArgumentException("用户名或密码错误");
+            // 拿到认证后的用户
+            User springUser = (User) auth.getPrincipal();
+
+            // 从数据库查出完整用户信息（也可在 UserDetailsServiceImpl 中加到 UserDetails 的 extra 信息中）
+            VUser user = userService.getOne(new LambdaQueryWrapper<VUser>()
+                    .eq(VUser::getUsername, springUser.getUsername()));
+
+            // 构建 VO 返回
+            return buildLoginUserVO(user);
+        } catch (BadCredentialsException e) {
+            throw new IllegalArgumentException("用户名或密码错误");
+        }
     }
 
     @Override

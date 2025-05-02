@@ -40,25 +40,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info(">>> 调用了 loadUserByUsername，用户名是：{}", username);
+
         // 根据用户名查询用户信息
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VUser::getUsername, username);
-        VUser vAppUser = userService.getOne(wrapper);
+        VUser vUser = userService.getOne(wrapper);
 
-        if (vAppUser == null) {
+        if (vUser == null) {
             throw new UsernameNotFoundException("用户 " + username + " 不存在");
         }
 
         // 构建用户权限集合
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         // 这里简单假设用户角色信息存储在 VUser 的 role 字段，可根据实际情况调整
-        String role = "ROLE_" + roleService.getRoleCodeByUserId(vAppUser.getId());
+        String role = "ROLE_" + roleService.getRoleCodeByUserId(vUser.getId());
         authorities.add(new SimpleGrantedAuthority(role));
 
         // 构建 Spring Security 的 UserDetails 对象
         return new User(
-                vAppUser.getUsername(),
-                vAppUser.getPassword(),
+                vUser.getUsername(),
+                vUser.getPassword(),
                 true, // 是否启用
                 true, // 账户是否未过期
                 true, // 密码是否未过期
