@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.shiyuan.base.common.utils.PageConverter;
+import com.shiyuan.base.modules.permission.entity.VUserRole;
 import com.shiyuan.base.modules.permission.service.VUserRoleService;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.mapper.VUserMapper;
 import com.shiyuan.base.modules.user.vo.VUserVO;
-import com.shiyuan.base.modules.permission.entity.VUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
 * @author wangshiyuan
@@ -69,12 +68,14 @@ public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
             wrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
         }
 
-        boolean isAsc = !"desc".equalsIgnoreCase(order);
-        switch (Objects.toString(sort, "id").toLowerCase()) {
+        String sortField = StrUtil.isBlank(sort) ? "id" : sort.toLowerCase();
+        boolean isAsc = "asc".equalsIgnoreCase(order); // 明确指定 asc 才升序，默认是 desc
+
+        switch (sortField) {
             case "id" -> wrapper.orderBy(true, isAsc, VUser::getId);
             case "username" -> wrapper.orderBy(true, isAsc, VUser::getUsername);
-            case "name"     -> wrapper.orderBy(true, isAsc, VUser::getName);
-            default         -> wrapper.orderByDesc(VUser::getId);
+            case "name" -> wrapper.orderBy(true, isAsc, VUser::getName);
+            default -> wrapper.orderByDesc(VUser::getId); // 兜底
         }
 
         IPage<VUser> pageData = this.page(new Page<>(currentPage, pageSize), wrapper);
