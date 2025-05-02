@@ -1,6 +1,6 @@
 package com.shiyuan.base.common.utils;
 
-import com.shiyuan.base.modules.auth.LoginUser;
+import com.shiyuan.base.modules.auth.JwtUserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,32 +29,32 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(LoginUser loginUser) {
+    public String generateToken(JwtUserInfo jwtUserInfo) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", loginUser.getId());
-        claims.put("username", loginUser.getUsername());
-        claims.put("role", loginUser.getRole());
+        claims.put("id", jwtUserInfo.getId());
+        claims.put("username", jwtUserInfo.getUsername());
+        claims.put("role", jwtUserInfo.getRole());
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(loginUser.getUsername())
+                .setSubject(jwtUserInfo.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public LoginUser parseToken(String token) {
+    public JwtUserInfo parseToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        LoginUser loginUser = new LoginUser();
-        loginUser.setId(claims.get("id", Long.class));
-        loginUser.setUsername(claims.get("username", String.class));
-        loginUser.setRole(claims.get("role", String.class));
+        JwtUserInfo jwtUserInfo = new JwtUserInfo();
+        jwtUserInfo.setId(claims.get("id", Long.class));
+        jwtUserInfo.setUsername(claims.get("username", String.class));
+        jwtUserInfo.setRole(claims.get("role", String.class));
 
-        return loginUser;
+        return jwtUserInfo;
     }
 }

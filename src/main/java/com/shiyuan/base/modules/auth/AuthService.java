@@ -5,7 +5,7 @@ import com.shiyuan.base.modules.user.vo.VUserVO;
 
 public interface AuthService {
     VUserVO login(String username, String password);
-    VUserVO register(VUserAddDTO user);
+    VUserVO register(VUserAddDTO userAddDTO);
     Boolean forgetPassword(String username, String telephone, String newPassword);
 }
 

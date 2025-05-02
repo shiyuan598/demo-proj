@@ -1,7 +1,7 @@
 package com.shiyuan.base.common.security;
 
 import com.shiyuan.base.common.utils.JwtUtils;
-import com.shiyuan.base.modules.auth.LoginUser;
+import com.shiyuan.base.modules.auth.JwtUserInfo;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -35,12 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
         String jwt = null;
-        LoginUser loginUser = null;
+        JwtUserInfo jwtUserInfo = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
-                loginUser = jwtUtils.parseToken(jwt); // 👈 改成返回 LoginUser
+                jwtUserInfo = jwtUtils.parseToken(jwt); // 👈 改成返回 LoginUser
             } catch (ExpiredJwtException e) {
                 sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT Token 已过期");
                 return;
@@ -50,15 +50,15 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        if (loginUser != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (jwtUserInfo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // 构造权限
             List<GrantedAuthority> authorities = Collections.singletonList(
-                    new SimpleGrantedAuthority(loginUser.getRole())
+                    new SimpleGrantedAuthority(jwtUserInfo.getRole())
             );
 
             // 构造 Authentication
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginUser, null, authorities);
+                    new UsernamePasswordAuthenticationToken(jwtUserInfo, null, authorities);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }

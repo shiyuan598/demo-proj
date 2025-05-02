@@ -1,6 +1,7 @@
 package com.shiyuan.base.modules.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shiyuan.base.common.security.SecurityUser;
 import com.shiyuan.base.common.utils.JwtUtils;
 import com.shiyuan.base.modules.permission.entity.VUserRole;
 import com.shiyuan.base.modules.permission.service.VRoleService;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,41 +46,37 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public VUserVO login(String username, String password) {
         try {
-            // 调用 Spring Security 验证用户名密码（会走 UserDetailsServiceImpl）
+            // 调用 Spring Security 验证用户名密码（UserDetailsServiceImpl）
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
 
             // 拿到认证后的用户
-            User springUser = (User) auth.getPrincipal();
-
-            // 从数据库查出完整用户信息（也可在 UserDetailsServiceImpl 中加到 UserDetails 的 extra 信息中）
-            VUser user = userService.getOne(new LambdaQueryWrapper<VUser>()
-                    .eq(VUser::getUsername, springUser.getUsername()));
+            SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
 
             // 构建 VO 返回
-            return buildLoginUserVO(user);
+            return buildLoginUserVO(securityUser.getUser());
         } catch (BadCredentialsException e) {
             throw new IllegalArgumentException("用户名或密码错误");
         }
     }
 
     @Override
-    public VUserVO register(VUserAddDTO userDto) {
+    public VUserVO register(VUserAddDTO userAddDTO) {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(VUser::getUsername, userDto.getUsername());
+        wrapper.eq(VUser::getUsername, userAddDTO.getUsername());
         if (userService.count(wrapper) > 0) {
             throw new IllegalArgumentException("用户已存在");
         }
 
-        VUser user = userConverter.toEntity(userDto);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        VUser user = userConverter.toEntity(userAddDTO);
+        user.setPassword(passwordEncoder.encode(userAddDTO.getPassword()));
         userService.save(user);
 
         // 默认分配普通用户角色
         VUserRole userRole = new VUserRole();
         userRole.setUserId(user.getId());
-        userRole.setRoleId(userDto.getRole());
+        userRole.setRoleId(userAddDTO.getRole());
         userRoleService.save(userRole);
 
         // 返回用户信息
@@ -98,15 +94,15 @@ public class AuthServiceImpl implements AuthService {
 
     private VUserVO buildLoginUserVO(VUser user) {
         String role = roleService.getRoleCodeByUserId(user.getId());
-        LoginUser loginUser = new LoginUser();
-        loginUser.setId(user.getId());
-        loginUser.setUsername(user.getUsername());
-        loginUser.setRole(role);
-        String token = jwtUtils.generateToken(loginUser);
+        JwtUserInfo jwtUserInfo = new JwtUserInfo();
+        jwtUserInfo.setId(user.getId());
+        jwtUserInfo.setUsername(user.getUsername());
+        jwtUserInfo.setRole(role);
+        String token = jwtUtils.generateToken(jwtUserInfo);
 
-        VUserVO vo = userConverter.toVO(user);
-        vo.setToken(token);
-        vo.setRole(role);
-        return vo;
+        VUserVO userVO = userConverter.toVO(user);
+        userVO.setToken(token);
+        userVO.setRole(role);
+        return userVO;
     }
 }

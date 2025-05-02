@@ -67,8 +67,8 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional
     @Override
-    public Long addVehicle(VVehicleAddDTO vehicleDTO) {
-        VVehicle vehicle = vehicleConverter.toEntity(vehicleDTO);
+    public Long addVehicle(VVehicleAddDTO vehicleAddDTO) {
+        VVehicle vehicle = vehicleConverter.toEntity(vehicleAddDTO);
         LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VVehicle::getVehicleNo, vehicle.getVehicleNo());
         if (this.exists(wrapper)) {
@@ -80,15 +80,15 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
 
     @Transactional
     @Override
-    public VVehicle updateVehicle(Long id, VVehicleUpdateDTO vehicle) {
+    public VVehicle updateVehicle(Long id, VVehicleUpdateDTO vehicleUpdateDTO) {
         VVehicle existingVehicle = this.getById(id);
         if (existingVehicle == null) {
             throw new IllegalArgumentException("车辆不存在");
         }
         // 校验 vehicleNo 是否已存在（除自己以外）
-        if (vehicle.getVehicleNo() != null) {
+        if (vehicleUpdateDTO.getVehicleNo() != null) {
             boolean vehicleNoExists = this.lambdaQuery()
-                    .eq(VVehicle::getVehicleNo, vehicle.getVehicleNo())
+                    .eq(VVehicle::getVehicleNo, vehicleUpdateDTO.getVehicleNo())
                     .ne(VVehicle::getId, id) // 排除自己
                     .exists();
             if (vehicleNoExists) {
@@ -96,7 +96,7 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
             }
         }
         // 只复制有值的字段
-        vehicleConverter.updateVehicleFromDto(vehicle, existingVehicle);
+        vehicleConverter.updateVehicleFromDto(vehicleUpdateDTO, existingVehicle);
         this.updateById(existingVehicle);
         return existingVehicle;
     }

@@ -85,14 +85,14 @@ public class UserController {
         }
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "添加用户")
     @PostMapping
     @Validated
     @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<Long>> addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO vUserDTO) {
+    public ResponseEntity<ResponseResult<Long>> addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO userAddDTO) {
         try {
-            return ResponseEntity.ok(ResponseResult.success(userService.addUser(vUserDTO)));
+            return ResponseEntity.ok(ResponseResult.success(userService.addUser(userAddDTO)));
         } catch(IllegalArgumentException e) {
             log.error("添加用户失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
@@ -107,9 +107,9 @@ public class UserController {
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
     public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable Long id,
-                                                              @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO vUserDTO) {
+                                                              @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO userUpdateDTO) {
         try {
-            return ResponseEntity.ok(ResponseResult.success(userService.updateUser(id, vUserDTO)));
+            return ResponseEntity.ok(ResponseResult.success(userService.updateUser(id, userUpdateDTO)));
         } catch(IllegalArgumentException e) {
             log.error("编辑用户失败: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
