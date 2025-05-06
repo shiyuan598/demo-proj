@@ -22,9 +22,11 @@
         left join v_user_role ur on u.id = ur.user_id
         left join v_role r on ur.role_id = r.id
         <where>
+            r.id = 2
             <if test="blurry != null and blurry != ''">
-                (u.name LIKE CONCAT('%', #{blurry}, '%') or u.username LIKE CONCAT('%', #{blurry}, '%'))
+               and (u.name LIKE CONCAT('%', #{blurry}, '%') or u.username LIKE CONCAT('%', #{blurry}, '%'))
             </if>
         </where>
+        order by u.id desc
     </select>
 </mapper>

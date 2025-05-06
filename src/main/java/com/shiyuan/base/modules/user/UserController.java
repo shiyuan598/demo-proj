@@ -1,5 +1,6 @@
 package com.shiyuan.base.modules.user;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.shiyuan.base.common.response.BaseResponse;
 import com.shiyuan.base.common.response.ResponseResult;
@@ -46,7 +47,9 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOListResponse.class)))
     public ResponseEntity<ResponseResult<List<VUserVO>>> list() {
         try {
-            List<VUser> userList = userService.list();
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.orderByDesc(VUser::getId);
+            List<VUser> userList = userService.list(wrapper);
             return ResponseEntity.ok(ResponseResult.success(userConverter.toVOList(userList)));
         } catch (Exception e) {
             log.error("查询用户列表失败: {}", e.getMessage(), e);

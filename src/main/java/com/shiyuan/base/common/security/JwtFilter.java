@@ -1,7 +1,6 @@
 package com.shiyuan.base.common.security;
 
 import com.shiyuan.base.common.utils.JwtUtils;
-import com.shiyuan.base.modules.auth.JwtUserInfo;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -21,14 +20,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
+    // 从请求头中提取 JWT 令牌；验证 JWT 令牌的有效性，包括签名验证、过期时间检查等
+    // 从 JWT 令牌中解析出用户信息和权限，将用户信息和权限封装到 Authentication 对象中，并将其设置到 SecurityContextHolder 中
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -47,14 +48,18 @@ public class JwtFilter extends OncePerRequestFilter {
             } catch (JwtException e) {
                 sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "无效的 JWT Token");
                 return;
+            } catch (Exception e) {
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT Token 处理异常");
+                return;
             }
         }
 
         if (jwtUserInfo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // 构造权限
-            List<GrantedAuthority> authorities = Collections.singletonList(
-                    new SimpleGrantedAuthority(jwtUserInfo.getRole())
-            );
+            List<GrantedAuthority> authorities = jwtUserInfo.getAuthorities()
+                    .stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
 
             // 构造 Authentication
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -62,7 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
-
         chain.doFilter(request, response);
     }
 

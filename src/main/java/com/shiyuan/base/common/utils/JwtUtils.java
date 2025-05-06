@@ -1,6 +1,6 @@
 package com.shiyuan.base.common.utils;
 
-import com.shiyuan.base.modules.auth.JwtUserInfo;
+import com.shiyuan.base.common.security.JwtUserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -34,6 +33,7 @@ public class JwtUtils {
         claims.put("id", jwtUserInfo.getId());
         claims.put("username", jwtUserInfo.getUsername());
         claims.put("role", jwtUserInfo.getRole());
+        claims.put("authorities", jwtUserInfo.getAuthorities());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(jwtUserInfo.getUsername())
@@ -54,6 +54,11 @@ public class JwtUtils {
         jwtUserInfo.setId(claims.get("id", Long.class));
         jwtUserInfo.setUsername(claims.get("username", String.class));
         jwtUserInfo.setRole(claims.get("role", String.class));
+        List<?> rawAuthorities = claims.get("authorities", List.class);
+        List<String> authorities = rawAuthorities == null
+                ? Collections.emptyList()
+                : rawAuthorities.stream().map(String::valueOf).collect(Collectors.toList());
+        jwtUserInfo.setAuthorities(authorities);
 
         return jwtUserInfo;
     }

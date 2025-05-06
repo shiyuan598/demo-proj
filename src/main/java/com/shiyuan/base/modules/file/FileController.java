@@ -21,7 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-@Tag(name="文件")
+@Tag(name="文件操作")
 @RestController
 @RequestMapping("/file")
 @Slf4j

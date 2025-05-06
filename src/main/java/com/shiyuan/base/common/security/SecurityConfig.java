@@ -31,6 +31,8 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    // 请求到 Spring Boot 应用时，请求首先会到达 Spring Security 的过滤器链
+    // SecurityConfig 类中配置的 securityFilterChain 定义了请求的访问规则和过滤器的执行顺序
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
