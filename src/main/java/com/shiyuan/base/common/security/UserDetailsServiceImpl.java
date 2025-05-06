@@ -33,14 +33,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetailsServiceImpl(VUserService userService) {
         this.userService = userService;
-        logger.info("UserDetailsServiceImpl initialized with UserService: {}", userService.getClass().getName());
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info(">>> 调用了 loadUserByUsername，用户名是：{}", username);
-
         // 根据用户名查询用户信息
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VUser::getUsername, username);

@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
-                jwtUserInfo = jwtUtils.parseToken(jwt); // 👈 改成返回 LoginUser
+                jwtUserInfo = jwtUtils.parseToken(jwt);
             } catch (ExpiredJwtException e) {
                 sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT Token 已过期");
                 return;

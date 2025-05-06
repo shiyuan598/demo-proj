@@ -119,3 +119,7 @@ public class OpenApiConfig {
         return patterns;
     }
 }
+
+//全局统一使用 JWT 授权机制，每个接口都默认要求 Authorization。
+//灵活排除无需授权的接口（如登录、注册），让 API 文档更清晰、更合理。
+// OperationCustomizer是Springdoc 提供的“钩子函数”，在每个接口的文档生成时调用它
