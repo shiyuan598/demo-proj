@@ -1,7 +1,6 @@
 package com.shiyuan.base.modules.trailer;
 
 import com.shiyuan.base.common.response.ResponseResult;
-import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +18,6 @@ import java.util.List;
 @Tag(name = "车辆挂载")
 @RestController
 @RequestMapping("/trailer")
-@Slf4j
 public class TrailerController {
     @Autowired
     private VTrailerService trailerService;
@@ -30,12 +28,7 @@ public class TrailerController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = VTrailer.class)))
     public ResponseEntity<ResponseResult<List<VTrailer>>> dict() {
-        try {
-            List<VTrailer> listData = trailerService.list();
-            return ResponseEntity.ok(ResponseResult.success(listData));
-        } catch (Exception e) {
-            log.error("查询车辆挂载异常: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
-        }
+        List<VTrailer> listData = trailerService.list();
+        return ResponseEntity.ok(ResponseResult.success(listData));
     }
 }

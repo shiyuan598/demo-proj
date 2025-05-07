@@ -10,6 +10,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,77 +28,68 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    /**
-     * 处理参数验证异常
-     */
+    private static final String GENERIC_SERVER_ERROR = "服务器开小差了，请稍后再试。";
+
+    private ResponseEntity<ResponseResult<Object>> buildError(HttpStatus status, ResultCode code, String message, Exception e) {
+        if (status.is5xxServerError()) {
+            log.error("系统异常: {}", message, e);
+        } else {
+            log.warn("请求异常: {}", message);
+        }
+        return ResponseEntity.status(status).body(ResponseResult.fail(code, message));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseResult<Object>> handleValidationExceptions(MethodArgumentNotValidException e) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+        String msg = e.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
-        return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR, "参数验证失败: " + errorMessage));
+        return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数验证失败: " + msg, e);
     }
 
-    /**
-     * 处理绑定异常
-     */
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ResponseResult<Object>> handleBindExceptions(BindException e) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+        String msg = e.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
-        return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR, "参数绑定失败: " + errorMessage));
+        return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数绑定失败: " + msg, e);
     }
 
-    /**
-     * 处理约束违反异常
-     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseResult<Object>> handleConstraintViolationExceptions(ConstraintViolationException e) {
-        String errorMessage = e.getConstraintViolations().stream()
+        String msg = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-        return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR, "参数校验失败: " + errorMessage));
+        return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数校验失败: " + msg, e);
     }
 
-    /**
-     * 处理业务异常
-     */
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ResponseResult<Object>> handleBadRequestException(BadRequestException e) {
-        return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR, e.getMessage()));
+        return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, e.getMessage(), e);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ResponseResult<Void>> handleAccessDeniedException(AccessDeniedException e) {
-        log.warn("无权限访问: {}", e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ResponseResult.fail(ResultCode.FORBIDDEN, "无权限访问，请联系管理员"));
+    public ResponseEntity<ResponseResult<Object>> handleAccessDeniedException(AccessDeniedException e) {
+        return buildError(HttpStatus.FORBIDDEN, ResultCode.FORBIDDEN, "无权限访问，请联系管理员", e);
     }
 
-    /**
-     * 处理未授权异常
-     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseResult<Object>> handleAuthenticationException(AuthenticationException e) {
+        return buildError(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED, "用户名或密码错误", e);
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ResponseResult<Object>> handleUnauthorizedException(UnauthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseResult.fail(ResultCode.UNAUTHORIZED, e.getMessage()));
+        return buildError(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED, e.getMessage(), e);
     }
 
-    /**
-     * 处理资源不存在异常
-     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ResponseResult<Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseResult.fail(ResultCode.NOT_FOUND, e.getMessage()));
+        return buildError(HttpStatus.NOT_FOUND, ResultCode.NOT_FOUND, e.getMessage(), e);
     }
 
-    /**
-     * 处理所有其他未明确处理的异常
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseResult<Object>> handleAllExceptions(Exception e) {
-        log.error("服务器内部错误: {}", e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ResultCode.INTERNAL_SERVER_ERROR, GENERIC_SERVER_ERROR, e);
     }
 }

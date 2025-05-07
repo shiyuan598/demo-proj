@@ -1,7 +1,6 @@
 package com.shiyuan.base.modules.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.shiyuan.base.common.exception.AuthenticationFailedException;
 import com.shiyuan.base.common.security.JwtUserInfo;
 import com.shiyuan.base.common.security.SecurityUser;
 import com.shiyuan.base.common.utils.JwtUtils;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,28 +50,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VUserVO login(String username, String password) {
-        try {
-            // 调用 Spring Security 验证用户名密码（UserDetailsServiceImpl）
-            // 调用 UserDetailsService#loadUserByUsername 方法从数据库中加载用户的详细信息
-            // 使用 passwordEncoder 对用户输入的密码和数据库中存储的加密密码进行比较，验证密码的有效性
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
+        // 调用 Spring Security 验证用户名密码（UserDetailsServiceImpl）
+        // 调用 UserDetailsService#loadUserByUsername 方法从数据库中加载用户的详细信息
+        // 使用 passwordEncoder 对用户输入的密码和数据库中存储的加密密码进行比较，验证密码的有效性
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
 
-            // 拿到认证后的用户
-            SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
-            String role = securityUser.getRole();
+        // 拿到认证后的用户
+        SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
+        String role = securityUser.getRole();
 
-            // 提取所有权限字符串
-            List<String> authorityList = securityUser.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+        // 提取所有权限字符串
+        List<String> authorityList = securityUser.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-            // 构建并返回登录结果
-            return buildLoginUserVO(securityUser.getUser(), role, authorityList);
-        } catch(AuthenticationException e) {
-            throw new AuthenticationFailedException("用户名或密码错误");
-        }
+        // 构建并返回登录结果
+        return buildLoginUserVO(securityUser.getUser(), role, authorityList);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +23,6 @@ import java.util.UUID;
 @Tag(name="文件操作")
 @RestController
 @RequestMapping("/file")
-@Slf4j
 public class FileController {
 
     private static final String UPLOAD_DIR = "uploads/";
@@ -55,7 +53,6 @@ public class FileController {
 
             return ResponseEntity.ok(ResponseResult.success(filename));
         } catch (IOException e) {
-            log.error("文件上传失败: {}", e.getMessage());
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
         }
     }
@@ -86,7 +83,6 @@ public class FileController {
                     .contentType(MediaType.parseMediaType(contentType))
                     .body(resource);
         } catch (IOException e) {
-            log.error("文件下载失败: {}", e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
     }

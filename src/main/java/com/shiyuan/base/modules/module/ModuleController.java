@@ -1,7 +1,6 @@
 package com.shiyuan.base.modules.module;
 
 import com.shiyuan.base.common.response.ResponseResult;
-import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +18,6 @@ import java.util.List;
 @Tag(name="所属模块")
 @RestController
 @RequestMapping("/module")
-@Slf4j
 public class ModuleController {
     @Autowired
     private VModuleService moduleService;
@@ -28,12 +26,7 @@ public class ModuleController {
     @GetMapping("/dict")
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VModule.class)))
     public ResponseEntity<ResponseResult<List<VModule>>> dict() {
-        try {
-            List<VModule> list = moduleService.list();
-            return ResponseEntity.ok(ResponseResult.success(list));
-        } catch (Exception e) {
-            log.error("查询所属模块异常: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
-        }
+        List<VModule> list = moduleService.list();
+        return ResponseEntity.ok(ResponseResult.success(list));
     }
 }
