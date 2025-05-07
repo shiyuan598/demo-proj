@@ -163,6 +163,7 @@ demo-proj
     │        ├── common
     │        │   ├── config         # 配置类（Spring Security、MybatisPlus、Swagger 等）
     │        │   ├── exception      # 全局异常处理
+    │        │   ├── log            # 日志
     │        │   ├── response       # 通用返回体封装
     │        │   ├── security       # 权限相关工具类、用户上下文
     │        │   └── utils          # 工具类
@@ -182,7 +183,8 @@ demo-proj
         ├── static/init.sql          # 初始化数据库测试数据
         ├── application.yml
         ├── application-dev.yml
-        └── application-prod.yml
+        ├── application-prod.yml
+        └── logback-spring.xml
     Dockerfile
     pom.xml
     README.md

@@ -1,5 +1,6 @@
 package com.shiyuan.base.modules.auth;
 
+import com.shiyuan.base.common.log.annotation.OperationLog;
 import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
@@ -20,6 +21,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @OperationLog("用户登录")
     @Operation(summary = "登录")
     @PostMapping("/login")
     public ResponseEntity<ResponseResult<VUserVO>> login(@Parameter(description = "用户名") @RequestParam String username, @Parameter(description = "密码") @RequestParam String password) {
@@ -35,6 +37,7 @@ public class AuthController {
         }
     }
 
+    @OperationLog("用户注册")
     @Operation(summary = "注册用户")
     @PostMapping("/register")
     public ResponseEntity<ResponseResult<VUserVO>> register(@Parameter(description = "用户信息") @RequestBody VUserAddDTO user) {
@@ -50,6 +53,7 @@ public class AuthController {
         }
     }
 
+    @OperationLog("重置密码")
     @Operation(summary = "忘记密码")
     @PostMapping("/forgetPassword")
     public ResponseEntity<ResponseResult<Boolean>> forgetPassword(

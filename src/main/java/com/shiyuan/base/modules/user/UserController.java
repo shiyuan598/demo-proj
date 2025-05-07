@@ -2,6 +2,7 @@ package com.shiyuan.base.modules.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.shiyuan.base.common.log.annotation.OperationLog;
 import com.shiyuan.base.common.response.BaseResponse;
 import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
@@ -70,6 +71,7 @@ public class UserController {
         }
     }
 
+    @OperationLog("用户分页列表")
     @Operation(summary = "用户分页列表")
     @GetMapping
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOPageResponse.class)))
@@ -88,6 +90,7 @@ public class UserController {
         }
     }
 
+    @OperationLog("创建用户")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "添加用户")
     @PostMapping
@@ -105,6 +108,7 @@ public class UserController {
         }
     }
 
+    @OperationLog("更新用户")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
@@ -122,6 +126,7 @@ public class UserController {
         }
     }
 
+    @OperationLog("删除用户")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
