@@ -1,4 +1,4 @@
-# Spring Boot 权限认证基础模板项目
+# Spring Boot 基础模板项目
 
 ## 📌 项目简介
 
@@ -45,21 +45,21 @@ cd demo-proj
 ```
 
 ### 2. 配置数据库连接
-修改 `application.yml` 中的数据库配置：
+修改 `application-*.yml` 中的数据库配置：
 
 ```yaml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/your_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: 123456
 ```
 
 ### 3. 导入测试数据（可选）
-项目根目录下 `static/sql` 中包含初始化 SQL 文件，可在本地 MySQL 中直接导入：
+项目根目录下 `resources/static` 中包含初始化 SQL 文件，可在本地 MySQL 中直接导入：
 
 ```bash
-mysql -u root -p your_db < static/sql/init.sql
+mysql -u root -p your_db < static/init.sql
 ```
 
 ### 4. 启动项目
@@ -76,31 +76,97 @@ mysql -u root -p your_db < static/sql/init.sql
 
 ---
 
+## 🚢 部署说明
+### 1.🔧 配置环境（dev / prod 区分）
+已在 `application.yml` 中支持多环境配置，通过命令行参数或环境变量控制：
+* `application-dev.yml`：开发环境配置（默认使用本地数据库）
+* `application-prod.yml`：生产环境配置（用于部署环境）
+
+✅ 默认入口配置文件为 `application.yml`，其中引用了 `${spring.profiles.active}` 来动态加载不同配置
+
+### 2.☕ 方式一：使用 Jar 包部署（传统方式）
+1. 打包项目
+```bash
+./mvnw clean package -DskipTests
+```
+2. 启动项目（选择环境）
+
+- 启动开发环境
+```bash
+java -Dspring.profiles.active=dev -jar target/demo-proj-0.0.1-SNAPSHOT.jar
+```
+
+- 启动生产环境
+```bash
+java -Dspring.profiles.active=prod -jar target/demo-proj-0.0.1-SNAPSHOT.jar
+```
+3. 访问服务
+
+- 默认端口为 9002，接口地址为：
+```
+http://localhost:9002/api
+```
+### 🐳 方式二：使用 Docker 部署
+项目已支持 `Dockerfile` 构建部署，支持环境变量切换配置。
+
+1. 构建镜像
+```bash
+docker build -t demo-proj:latest .
+```
+2. 启动容器（示例为生产环境 prod）
+```bash
+   docker run -d \
+   -e "SPRING_PROFILES_ACTIVE=prod" \
+   -p 9002:9002 \
+   --name demo-proj \
+   demo-proj:latest
+```
+3. 查看日志
+```bash
+docker logs -f demo-proj
+```
+
+📝 环境变量说明
+
+   | 变量名                     | 说明                |
+   |-------------------------|-------------------|
+   | SPRING_PROFILES_ACTIVE	 | 启动配置环境，如：dev、prod |
+
+---
+
 ## 🗂️ 项目结构说明（模块化）
 
 ```
-src/main/java
-└── com.example.project
-    ├── common
-    │   ├── config         # 配置类（Spring Security、Swagger 等）
-    │   ├── exception      # 全局异常处理
-    │   ├── response       # 通用返回体封装
-    │   ├── security       # 权限相关工具类、用户上下文
-    │   └── utils          # 工具类
-    ├── modules
-    │   ├── auth           # 登录鉴权模块
-    │   ├── file           # 文件上传下载模块
-    │   └── user           # 用户模块
-    │       ├── controller
-    │       ├── dto
-    │       ├── entity
-    │       ├── mapper
-    │       ├── service
-    │       └── vo
-    └── Application.java
-
-static/sql/
-└── init.sql              # 初始化数据库测试数据
+demo-proj
+    src/main
+    ├── java
+    │    └── com.shiyuan.base
+    │        ├── common
+    │        │   ├── config         # 配置类（Spring Security、MybatisPlus、Swagger 等）
+    │        │   ├── exception      # 全局异常处理
+    │        │   ├── response       # 通用返回体封装
+    │        │   ├── security       # 权限相关工具类、用户上下文
+    │        │   └── utils          # 工具类
+    │        ├── modules
+    │        │   ├── auth           # 登录鉴权模块
+    │        │   ├── file           # 文件上传下载模块
+    │        │   └── user           # 用户模块
+    │        │       ├── controller
+    │        │       ├── dto
+    │        │       ├── entity
+    │        │       ├── mapper
+    │        │       ├── service
+    │        │       └── vo
+    │        └── Application.java
+    └── resources
+        ├── mapper
+        ├── static/init.sql          # 初始化数据库测试数据
+        ├── application.yml
+        ├── application-dev.yml
+        └── application-prod.yml
+    Dockerfile
+    pom.xml
+    README.md
 ```
 
 ---
@@ -124,6 +190,7 @@ public R<?> getAdminData() { ... }
 ## 📈 后续可扩展功能（建议）
 
 - [ ] 操作日志记录增强（可考虑使用 AOP + 注解）
+- [ ] 集成 Flyway版本化数据库变更
 - [ ] 接入 EasyExcel，实现 Excel 导入导出
 - [ ] 用户多角色支持、权限树结构管理
 - [ ] 国际化、多语言支持

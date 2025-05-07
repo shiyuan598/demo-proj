@@ -1,3 +1,7 @@
+spring:
+  profiles:
+    active: dev # 默认激活 dev，可在部署时使用 prod 替换
+
 server:
   port: 9002
   servlet:
@@ -7,38 +11,17 @@ jwt:
   secret: "U2FsdGVkX199c1Q2c2h5c25vbmV0aW5nYm9va2JveGV4YW1wbGU="
   expiration: 86400000
 
-spring:
-  application:
-    name: demo-proj
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    persist-authorization: true
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    group: 'default'
+    paths-to-match: '/**'
+    packages-to-scan: com.shiyuan.base
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/vehicle_role?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
-#    url: jdbc:mysql://172.16.18.123:3306/vehicle?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
-
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/java
-      exclude: WEB-INF/**
-
-  thymeleaf:
-    cache: false
-
-#mybatis-plus
-mybatis-plus:
-  mapper-locations: classpath:mapper/**/*.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
-
-# knife4j的增强配置
 knife4j:
   enable: true
   setting:
@@ -46,14 +29,3 @@ knife4j:
     enable-swagger-models: true
     enable-document-manage: true
     swagger-model-name: 实体类列表
-
-# springdoc-openapi项目配置
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
-  group-configs:
-    group: 'default'
-    paths-to-match: '/**'
-    packages-to-scan: com.shiyuan.base
