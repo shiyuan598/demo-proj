@@ -1,4 +1,5 @@
-# Spring Boot 基础模板项目
+
+# Spring Boot 基础模板项目 
 
 ## 📌 项目简介
 
@@ -62,12 +63,27 @@ spring:
 mysql -u root -p your_db < static/init.sql
 ```
 
-### 4. 启动项目
+### 4. 生成 JWT 密钥（推荐）
+```bash
+openssl rand -base64 64
+```
+复制生成结果，作为环境变量中的 JWT 密钥。
+
+### 5. 设置环境变量（Linux/macOS）
+```bash
+export SPRING_PROFILES_ACTIVE=dev
+export JWT_SECRET=your_secure_secret_key_base64
+export JWT_EXPIRATION=86400000
+```
+
+> ⚠️ 建议生产环境中通过环境变量注入 JWT 密钥，避免写死在配置文件中。
+
+### 5. 启动项目
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### 5. 访问接口文档
+### 6. 访问接口文档
 启动成功后，控制台会输出接口文档地址，默认格式如下：
 
 ```
@@ -77,28 +93,25 @@ mysql -u root -p your_db < static/init.sql
 ---
 
 ## 🚢 部署说明
-### 1.🔧 配置环境（dev / prod 区分）
+### 1. 🔧 配置环境（dev / prod 区分）
 已在 `application.yml` 中支持多环境配置，通过命令行参数或环境变量控制：
 * `application-dev.yml`：开发环境配置（默认使用本地数据库）
 * `application-prod.yml`：生产环境配置（用于部署环境）
 
 ✅ 默认入口配置文件为 `application.yml`，其中引用了 `${spring.profiles.active}` 来动态加载不同配置
 
-### 2.☕ 方式一：使用 Jar 包部署（传统方式）
-1. 打包项目
+### 2. ☕ 方式一：使用 Jar 包部署（传统方式）
 ```bash
+# 打包
 ./mvnw clean package -DskipTests
-```
-2. 启动项目（选择环境）
 
-- 启动开发环境
-```bash
-java -Dspring.profiles.active=dev -jar target/demo-proj-0.0.1-SNAPSHOT.jar
-```
+# 设置环境变量（或使用 -D 参数）
+export SPRING_PROFILES_ACTIVE=prod
+export JWT_SECRET=your_secure_secret_key_base64
+export JWT_EXPIRATION=86400000
 
-- 启动生产环境
-```bash
-java -Dspring.profiles.active=prod -jar target/demo-proj-0.0.1-SNAPSHOT.jar
+# 启动项目
+java -jar target/demo-proj-0.0.1-SNAPSHOT.jar
 ```
 3. 访问服务
 
@@ -106,31 +119,37 @@ java -Dspring.profiles.active=prod -jar target/demo-proj-0.0.1-SNAPSHOT.jar
 ```
 http://localhost:9002/api
 ```
-### 🐳 方式二：使用 Docker 部署
-项目已支持 `Dockerfile` 构建部署，支持环境变量切换配置。
 
-1. 构建镜像
+### 3.🐳 方式二：使用 Docker 部署
+**Dockerfile 示例**
+```dockerfile
+FROM eclipse-temurin:23-jdk-jammy
+
+WORKDIR /app
+COPY . /app
+RUN ./mvnw clean package -DskipTests
+EXPOSE 9002
+
+CMD ["java", "-jar", "target/demo-proj-0.0.1-SNAPSHOT.jar"]
+```
+
+**构建镜像**
 ```bash
 docker build -t demo-proj:latest .
 ```
-2. 启动容器（示例为生产环境 prod）
+
+**启动容器（推荐方式：使用环境变量）**
 ```bash
-   docker run -d \
-   -e "SPRING_PROFILES_ACTIVE=prod" \
-   -p 9002:9002 \
-   --name demo-proj \
-   demo-proj:latest
-```
-3. 查看日志
-```bash
-docker logs -f demo-proj
+docker run -d -e "SPRING_PROFILES_ACTIVE=prod" -e "JWT_SECRET=你的密钥" -e "JWT_EXPIRATION=86400000" -p 9002:9002 --name demo-proj demo-proj:latest
 ```
 
 📝 环境变量说明
 
-   | 变量名                     | 说明                |
-   |-------------------------|-------------------|
-   | SPRING_PROFILES_ACTIVE	 | 启动配置环境，如：dev、prod |
+| 变量名            | 说明                     |
+|------------------|------------------------|
+| SPRING_PROFILES_ACTIVE | 启动配置环境，如：dev、prod      |
+| JWT_SECRET        | JWT 加密密钥，用于签发和校验 Token |
+| JWT_EXPIRATION | JWT 过期时间     |
 
 ---
 

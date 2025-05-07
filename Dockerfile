@@ -8,4 +8,4 @@ RUN ./mvnw clean package -DskipTests
 
 EXPOSE 9002
 
-CMD ["java", "-jar", "target/demo-proj-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=prod"]
+CMD ["java", "-jar", "target/demo-proj-0.0.1-SNAPSHOT.jar"]

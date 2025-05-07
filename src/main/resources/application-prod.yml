@@ -12,6 +12,9 @@ spring:
   thymeleaf:
     cache: true
 
+jwt:
+  secret: ${JWT_SECRET} # 不提供默认值，未设置将启动失败
+
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
   configuration:

@@ -8,8 +8,8 @@ server:
     context-path: /api
 
 jwt:
-  secret: "U2FsdGVkX199c1Q2c2h5c25vbmV0aW5nYm9va2JveGV4YW1wbGU="
-  expiration: 86400000
+  secret: ${JWT_SECRET:ezpK30egWVnRIlIu0WsTvLUZ1JRfWajod5cRj9EV7k4=}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 springdoc:
   swagger-ui:
