@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @ResponseBody
 @Slf4j
 public class GlobalExceptionHandler {
-
     private static final String GENERIC_SERVER_ERROR = "服务器开小差了，请稍后再试。";
 
     private ResponseEntity<ResponseResult<Object>> buildError(HttpStatus status, ResultCode code, String message, Exception e) {

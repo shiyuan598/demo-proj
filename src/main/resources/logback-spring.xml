@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <!-- 操作日志文件 -->
+    <!-- 原始操作日志文件输出（供异步使用） -->
     <appender name="OPERATION_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/operation.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -21,10 +21,20 @@
         </encoder>
     </appender>
 
+    <!-- 异步操作日志（包装 OPERATION_LOG） -->
+    <appender name="ASYNC_OPERATION_LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>512</queueSize> <!-- 默认256，可按需调整 -->
+        <discardingThreshold>0</discardingThreshold> <!-- 丢弃日志的阈值（0 表示不丢） -->
+        <neverBlock>true</neverBlock> <!-- 如果队列满了就丢弃（避免阻塞主线程） -->
+        <appender-ref ref="OPERATION_LOG"/>
+    </appender>
+
+    <!-- 自定义操作日志 logger -->
     <logger name="OPERATION" level="INFO" additivity="false">
-        <appender-ref ref="OPERATION_LOG" />
+        <appender-ref ref="ASYNC_OPERATION_LOG" />
     </logger>
 
+    <!-- 根日志（控制台） -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
