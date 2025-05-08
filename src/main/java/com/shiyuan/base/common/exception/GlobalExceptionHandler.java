@@ -23,18 +23,26 @@ import java.util.stream.Collectors;
 /**
  * 全局异常处理器
  */
+@Slf4j
 @ControllerAdvice
 @ResponseBody
-@Slf4j
 public class GlobalExceptionHandler {
+
     private static final String GENERIC_SERVER_ERROR = "服务器开小差了，请稍后再试。";
+    private static final org.slf4j.Logger operationLogger = org.slf4j.LoggerFactory.getLogger("OPERATION");
+    private static final org.slf4j.Logger exceptionLogger = org.slf4j.LoggerFactory.getLogger("EXCEPTION");
 
     private ResponseEntity<ResponseResult<Object>> buildError(HttpStatus status, ResultCode code, String message, Exception e) {
         if (status.is5xxServerError()) {
-            log.error("系统异常: {}", message, e);
+            // 系统错误：打堆栈记录在 exception.log
+            exceptionLogger.error("系统异常: {}, 异常类: {}, 请求失败代码: {}", message, e.getClass().getSimpleName(), code.name(), e);
+            // 操作审计：不打堆栈，仅关键信息
+            operationLogger.error("系统异常: {}, 异常类: {}, 请求失败代码: {}", message, e.getClass().getSimpleName(), code.name());
         } else {
-            log.warn("请求异常: {}", message);
+            // 参数错误类的请求异常，不打堆栈
+            operationLogger.warn("请求异常: {}, 异常类: {}", message, e.getClass().getSimpleName());
         }
+
         return ResponseEntity.status(status).body(ResponseResult.fail(code, message));
     }
 
