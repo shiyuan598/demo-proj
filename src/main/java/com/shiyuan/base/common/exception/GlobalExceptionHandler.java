@@ -1,11 +1,9 @@
 package com.shiyuan.base.common.exception;
 
-
 import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +21,11 @@ import java.util.stream.Collectors;
 /**
  * 全局异常处理器
  */
-@Slf4j
 @ControllerAdvice
 @ResponseBody
 public class GlobalExceptionHandler {
 
-    private static final String GENERIC_SERVER_ERROR = "服务器开小差了，请稍后再试。";
+    private static final String GENERIC_SERVER_ERROR = "服务器正在努力恢复中，请稍后再试～";
     private static final org.slf4j.Logger operationLogger = org.slf4j.LoggerFactory.getLogger("OPERATION");
     private static final org.slf4j.Logger exceptionLogger = org.slf4j.LoggerFactory.getLogger("EXCEPTION");
 
