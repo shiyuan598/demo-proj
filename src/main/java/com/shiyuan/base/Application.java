@@ -8,10 +8,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 
 @SpringBootApplication
-public class DemoProjApplication implements ApplicationListener<ContextRefreshedEvent> {
+public class Application implements ApplicationListener<ContextRefreshedEvent> {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoProjApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 	@Override

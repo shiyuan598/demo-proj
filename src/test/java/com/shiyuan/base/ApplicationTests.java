@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.List;
 
 @SpringBootTest
-class DemoProjApplicationTests {
+class ApplicationTests {
 
 	@Autowired
 	private JwtUtils jwtUtils;
