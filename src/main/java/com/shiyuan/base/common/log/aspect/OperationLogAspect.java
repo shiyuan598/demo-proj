@@ -35,7 +35,7 @@ public class OperationLogAspect {
         try {
             result = joinPoint.proceed();
         } catch (Throwable ex) {
-            log.error("操作失败: {}", ex.getMessage(), ex);
+            log.error("操作失败: {}", ex.getMessage());
             throw ex;
         }
 
