@@ -20,7 +20,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +35,6 @@ public class UserController {
 
     @Autowired
     private UserConverter userConverter;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")

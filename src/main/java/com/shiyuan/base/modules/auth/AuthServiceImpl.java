@@ -50,12 +50,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VUserVO login(String username, String password) {
+        // authenticationManager.authenticate(token) 触发整个认证流程
         // 调用 Spring Security 验证用户名密码（UserDetailsServiceImpl）
         // 调用 UserDetailsService#loadUserByUsername 方法从数据库中加载用户的详细信息
         // 使用 passwordEncoder 对用户输入的密码和数据库中存储的加密密码进行比较，验证密码的有效性
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         // 拿到认证后的用户
         SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
@@ -66,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // 构建并返回登录结果
+        // 构建并返回登录结果,token，及用户信息(可选，便于前端展示)
         return buildLoginUserVO(securityUser.getUser(), role, authorityList);
     }
 

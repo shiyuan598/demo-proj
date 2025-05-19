@@ -38,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = null;
         JwtUserInfo jwtUserInfo = null;
 
+        // 验证 JWT 的签名，一旦 JWT 验证失败（过期、无效等），直接返回 401 响应，不再继续过滤器链
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
@@ -55,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (jwtUserInfo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // 构造权限
+            // 构造权限，需要加上ROLE_前缀，验证权限的注解hasRole("ADMIN") 时，其实底层是去找 ROLE_ADMIN
             List<GrantedAuthority> authorities = jwtUserInfo.getAuthorities()
                     .stream()
                     .map(SimpleGrantedAuthority::new)
