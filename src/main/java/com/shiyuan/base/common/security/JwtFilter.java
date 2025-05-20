@@ -62,9 +62,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-            // 构造 Authentication
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(jwtUserInfo, null, authorities);
+            // 从 Token 中解析出用户信息, 手动构造一个已认证的 Authentication 对象，并将其存入 SecurityContextHolder
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(jwtUserInfo, null, authorities);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }

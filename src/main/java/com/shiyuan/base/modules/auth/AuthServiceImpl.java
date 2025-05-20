@@ -50,10 +50,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VUserVO login(String username, String password) {
+        // new UsernamePasswordAuthenticationToken(username, password)构造未认证的Authentication 对象
         // authenticationManager.authenticate(token) 触发整个认证流程
         // 调用 Spring Security 验证用户名密码（UserDetailsServiceImpl）
         // 调用 UserDetailsService#loadUserByUsername 方法从数据库中加载用户的详细信息
         // 使用 passwordEncoder 对用户输入的密码和数据库中存储的加密密码进行比较，验证密码的有效性
+        // 认证成功后创建一个 已认证的 Authentication 对象
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         // 拿到认证后的用户
