@@ -1,9 +1,8 @@
 package com.shiyuan.base.common.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 @Schema(description = "通用分页响应对象")

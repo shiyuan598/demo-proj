@@ -22,4 +22,4 @@ public class JacksonConfig {
     }
 }
 
-//定义了一个只序列化非 null 字段的 ObjectMapper，优化 JSON 响应的体积和可读性。
+// 定义了一个只序列化非 null 字段的 ObjectMapper，优化 JSON 响应的体积和可读性。

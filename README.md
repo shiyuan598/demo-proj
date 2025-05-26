@@ -90,6 +90,14 @@ export JWT_EXPIRATION=86400000
 接口文档地址：http://localhost:9002/api/doc.html
 ```
 
+### 7. 代码格式化
+Spotless插件 + Eclipse Java Alibaba Style XML：
+
+```
+格式化代码：mvn spotless:apply
+检查格式：mvn spotless:check
+```
+
 ---
 
 ## 🚢 部署说明
@@ -185,6 +193,7 @@ demo-proj
         ├── application-dev.yml
         ├── application-prod.yml
         └── logback-spring.xml
+    style/eclipse-codestyle.xml
     Dockerfile
     pom.xml
     README.md

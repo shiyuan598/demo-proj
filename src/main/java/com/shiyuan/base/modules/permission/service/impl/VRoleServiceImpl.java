@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
-* @author wangshiyuan
-* @description 针对表【v_role】的数据库操作Service实现
-* @createDate 2025-04-29 17:17:05
-*/
+ * @author wangshiyuan
+ * @description 针对表【v_role】的数据库操作Service实现
+ * @createDate 2025-04-29 17:17:05
+ */
 @Service
-public class VRoleServiceImpl extends ServiceImpl<VRoleMapper, VRole>
-    implements VRoleService{
+public class VRoleServiceImpl extends ServiceImpl<VRoleMapper, VRole> implements VRoleService {
     @Autowired
     private VRoleMapper roleMapper;
 
@@ -23,7 +22,3 @@ public class VRoleServiceImpl extends ServiceImpl<VRoleMapper, VRole>
         return roleMapper.selectRoleCodeByUserId(userId);
     }
 }
-
-
-
-

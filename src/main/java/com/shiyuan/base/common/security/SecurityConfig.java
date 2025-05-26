@@ -1,6 +1,6 @@
 package com.shiyuan.base.common.security;
 
-
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +18,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -35,30 +33,23 @@ public class SecurityConfig {
     // SecurityConfig 类中配置的 securityFilterChain 定义了请求的访问规则和过滤器的执行顺序
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 启用跨域配置
-                .authorizeHttpRequests(auth -> auth
-                        // 放行登录接口
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
-                        .requestMatchers("/file/download/**").permitAll()
-                        // 放行 Knife4j 和 Swagger 文档相关路径
-                        .requestMatchers(
-                                "/doc.html",                 // Knife4j 文档页面
-                                "/webjars/**",               // Knife4j 依赖的资源
-                                "/v3/api-docs/**",           // OpenAPI 规范数据
-                                "/swagger-resources/**",      // Swagger 资源
-                                "/swagger-ui/**",            // Swagger UI 界面
-                                "/swagger-ui.html"           // Swagger UI 页面
-                        ).permitAll()
-                        // 放行静态资源路径
-                        .requestMatchers("/static/**", "/resources/**", "/images/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource())) // 启用跨域配置
+            .authorizeHttpRequests(auth -> auth
+                // 放行登录接口
+                .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
+                .requestMatchers("/file/download/**").permitAll()
+                // 放行 Knife4j 和 Swagger 文档相关路径
+                .requestMatchers("/doc.html", // Knife4j 文档页面
+                    "/webjars/**", // Knife4j 依赖的资源
+                    "/v3/api-docs/**", // OpenAPI 规范数据
+                    "/swagger-resources/**", // Swagger 资源
+                    "/swagger-ui/**", // Swagger UI 界面
+                    "/swagger-ui.html" // Swagger UI 页面
+                ).permitAll()
+                // 放行静态资源路径
+                .requestMatchers("/static/**", "/resources/**", "/images/**").permitAll().anyRequest().authenticated())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -72,6 +63,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @TableName v_user_role
  */
-@TableName(value ="v_user_role")
+@TableName(value = "v_user_role")
 @Data
 public class VUserRole {
     private Long userId;

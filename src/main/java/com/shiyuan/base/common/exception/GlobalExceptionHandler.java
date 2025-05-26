@@ -4,6 +4,7 @@ import com.shiyuan.base.common.response.ResponseResult;
 import com.shiyuan.base.common.response.ResultCode;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.stream.Collectors;
-
-/**
- * 全局异常处理器
- */
+/** 全局异常处理器 */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,10 +24,12 @@ public class GlobalExceptionHandler {
     private static final org.slf4j.Logger operationLogger = org.slf4j.LoggerFactory.getLogger("OPERATION");
     private static final org.slf4j.Logger exceptionLogger = org.slf4j.LoggerFactory.getLogger("EXCEPTION");
 
-    private ResponseEntity<ResponseResult<Object>> buildError(HttpStatus status, ResultCode code, String message, Exception e) {
+    private ResponseEntity<ResponseResult<Object>> buildError(HttpStatus status, ResultCode code, String message,
+        Exception e) {
         if (status.is5xxServerError()) {
             // 系统错误：打堆栈记录在 exception.log
-            exceptionLogger.error("系统异常: {}, 异常类: {}, 请求失败代码: {}", message, e.getClass().getSimpleName(), code.name(), e);
+            exceptionLogger.error("系统异常: {}, 异常类: {}, 请求失败代码: {}", message, e.getClass().getSimpleName(), code.name(),
+                e);
             // 操作审计：不打堆栈，仅关键信息
             operationLogger.error("系统异常: {}, 异常类: {}, 请求失败代码: {}", message, e.getClass().getSimpleName(), code.name());
         } else {
@@ -43,25 +42,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseResult<Object>> handleValidationExceptions(MethodArgumentNotValidException e) {
-        String msg = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
+        String msg = e.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage)
+            .collect(Collectors.joining(", "));
         return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数验证失败: " + msg, e);
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ResponseResult<Object>> handleBindExceptions(BindException e) {
-        String msg = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
+        String msg = e.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage)
+            .collect(Collectors.joining(", "));
         return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数绑定失败: " + msg, e);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseResult<Object>> handleConstraintViolationExceptions(ConstraintViolationException e) {
-        String msg = e.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(", "));
+        String msg =
+            e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", "));
         return buildError(HttpStatus.BAD_REQUEST, ResultCode.PARAM_ERROR, "参数校验失败: " + msg, e);
     }
 

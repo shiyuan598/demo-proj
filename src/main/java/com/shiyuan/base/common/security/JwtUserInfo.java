@@ -1,8 +1,7 @@
 package com.shiyuan.base.common.security;
 
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class JwtUserInfo {

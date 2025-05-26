@@ -4,9 +4,8 @@ import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
 import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
-import org.mapstruct.*;
-
 import java.util.List;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface VehicleConverter {

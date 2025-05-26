@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * @TableName v_user
  */
-@TableName(value ="v_user")
+@TableName(value = "v_user")
 @Data
 public class VUser {
     @TableId(value = "id", type = IdType.AUTO)

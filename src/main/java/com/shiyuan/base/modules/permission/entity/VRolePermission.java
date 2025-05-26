@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @TableName v_role_permission
  */
-@TableName(value ="v_role_permission")
+@TableName(value = "v_role_permission")
 @Data
 public class VRolePermission {
     private Long roleId;

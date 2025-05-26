@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * @TableName v_project
  */
-@TableName(value ="v_project")
+@TableName(value = "v_project")
 @Data
 public class VProject {
     @TableId(value = "id", type = IdType.AUTO)

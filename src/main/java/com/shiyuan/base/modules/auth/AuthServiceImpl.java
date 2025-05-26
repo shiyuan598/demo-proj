@@ -12,6 +12,9 @@ import com.shiyuan.base.modules.user.VUser;
 import com.shiyuan.base.modules.user.VUserService;
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,10 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -56,16 +55,16 @@ public class AuthServiceImpl implements AuthService {
         // 调用 UserDetailsService#loadUserByUsername 方法从数据库中加载用户的详细信息
         // 使用 passwordEncoder 对用户输入的密码和数据库中存储的加密密码进行比较，验证密码的有效性
         // 认证成功后创建一个 已认证的 Authentication 对象
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        Authentication auth =
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         // 拿到认证后的用户
-        SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
+        SecurityUser securityUser = (SecurityUser)auth.getPrincipal();
         String role = securityUser.getRole();
 
         // 提取所有权限字符串
-        List<String> authorityList = securityUser.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        List<String> authorityList =
+            securityUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
         // 构建并返回登录结果,token，及用户信息(可选，便于前端展示)
         return buildLoginUserVO(securityUser.getUser(), role, authorityList);

@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * @TableName v_order_state
  */
-@TableName(value ="v_order_state")
+@TableName(value = "v_order_state")
 @Data
 public class VOrderState {
     @TableId(value = "id", type = IdType.AUTO)

@@ -21,7 +21,8 @@ public class AuthController {
     @OperationLog("用户登录")
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public ResponseEntity<ResponseResult<VUserVO>> login(@Parameter(description = "用户名") @RequestParam String username, @Parameter(description = "密码") @RequestParam String password) {
+    public ResponseEntity<ResponseResult<VUserVO>> login(@Parameter(description = "用户名") @RequestParam String username,
+        @Parameter(description = "密码") @RequestParam String password) {
         VUserVO userVO = authService.login(username, password);
         return ResponseEntity.ok(ResponseResult.success(userVO));
     }
@@ -29,7 +30,8 @@ public class AuthController {
     @OperationLog("用户注册")
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ResponseEntity<ResponseResult<VUserVO>> register(@Parameter(description = "用户信息") @RequestBody VUserAddDTO user) {
+    public ResponseEntity<ResponseResult<VUserVO>>
+        register(@Parameter(description = "用户信息") @RequestBody VUserAddDTO user) {
         VUserVO userVO = authService.register(user);
         return ResponseEntity.ok(ResponseResult.success(userVO));
     }
@@ -38,9 +40,9 @@ public class AuthController {
     @Operation(summary = "忘记密码")
     @PostMapping("/forgetPassword")
     public ResponseEntity<ResponseResult<Boolean>> forgetPassword(
-            @Parameter(description = "用户名") @RequestParam String username,
-            @Parameter(description = "手机号") @RequestParam String telephone,
-            @Parameter(description = "新密码") @RequestParam String newPassword) {
+        @Parameter(description = "用户名") @RequestParam String username,
+        @Parameter(description = "手机号") @RequestParam String telephone,
+        @Parameter(description = "新密码") @RequestParam String newPassword) {
         authService.forgetPassword(username, telephone, newPassword);
         return ResponseEntity.ok(ResponseResult.success(true));
     }

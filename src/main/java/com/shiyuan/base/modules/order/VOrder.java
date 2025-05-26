@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 /**
  * @TableName v_order
  */
-@TableName(value ="v_order")
+@TableName(value = "v_order")
 @Data
 public class VOrder {
     @TableId(value = "id", type = IdType.AUTO)

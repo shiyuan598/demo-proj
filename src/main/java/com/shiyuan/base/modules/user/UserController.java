@@ -17,13 +17,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "用户相关")
 @RestController
@@ -38,7 +37,8 @@ public class UserController {
 
     @Operation(summary = "用户列表")
     @GetMapping("/list")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOListResponse.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = VUserVOListResponse.class)))
     public ResponseEntity<ResponseResult<List<VUserVO>>> list() {
         LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(VUser::getId);
@@ -48,8 +48,10 @@ public class UserController {
 
     @Operation(summary = "司机列表")
     @GetMapping("/driver")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOListResponse.class)))
-    public ResponseEntity<ResponseResult<List<VUserVO>>> getDrivers(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry) {
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = VUserVOListResponse.class)))
+    public ResponseEntity<ResponseResult<List<VUserVO>>>
+        getDrivers(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry) {
         List<VUserVO> drivers = userService.getDrivers(blurry);
         return ResponseEntity.ok(ResponseResult.success(drivers));
     }
@@ -57,13 +59,14 @@ public class UserController {
     @OperationLog("用户分页列表")
     @Operation(summary = "用户分页列表")
     @GetMapping
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VUserVOPageResponse.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = VUserVOPageResponse.class)))
     public ResponseEntity<ResponseResult<List<VUserVO>>> getUserPage(
-            @Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
-            @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Long currentPage,
-            @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Long pageSize,
-            @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
-            @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
+        @Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
+        @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Long currentPage,
+        @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Long pageSize,
+        @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
+        @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
         IPage<VUserVO> pageVO = userService.getUserPage(blurry, currentPage, pageSize, sort, order);
         return ResponseEntity.ok(ResponseResult.success(pageVO));
     }
@@ -73,8 +76,10 @@ public class UserController {
     @Operation(summary = "添加用户")
     @PostMapping
     @Validated
-    @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
-    public ResponseEntity<ResponseResult<Long>> addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO userAddDTO) {
+    @ApiResponse(responseCode = "200", description = "添加成功",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    public ResponseEntity<ResponseResult<Long>>
+        addUser(@Parameter(description = "用户信息") @Valid @RequestBody VUserAddDTO userAddDTO) {
         return ResponseEntity.ok(ResponseResult.success(userService.addUser(userAddDTO)));
     }
 
@@ -82,9 +87,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
-    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    @ApiResponse(responseCode = "200", description = "更新成功",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
     public ResponseEntity<ResponseResult<VUserVO>> updateUser(@Parameter(description = "用户Id") @PathVariable Long id,
-                                                              @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO userUpdateDTO) {
+        @Parameter(description = "用户信息") @RequestBody VUserUpdateDTO userUpdateDTO) {
         return ResponseEntity.ok(ResponseResult.success(userService.updateUser(id, userUpdateDTO)));
     }
 
@@ -92,7 +98,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
+    @ApiResponse(responseCode = "200", description = "删除成功",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
     public ResponseEntity<ResponseResult<Boolean>> deleteUser(@PathVariable Long id) {
         return ResponseEntity.ok(ResponseResult.success(userService.removeUserById(id)));
     }

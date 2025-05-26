@@ -6,12 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtils {
@@ -34,30 +33,22 @@ public class JwtUtils {
         claims.put("username", jwtUserInfo.getUsername());
         claims.put("role", jwtUserInfo.getRole());
         claims.put("authorities", jwtUserInfo.getAuthorities());
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(jwtUserInfo.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setClaims(claims).setSubject(jwtUserInfo.getUsername())
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
     public JwtUserInfo parseToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
 
         JwtUserInfo jwtUserInfo = new JwtUserInfo();
         jwtUserInfo.setId(claims.get("id", Long.class));
         jwtUserInfo.setUsername(claims.get("username", String.class));
         jwtUserInfo.setRole(claims.get("role", String.class));
         List<?> rawAuthorities = claims.get("authorities", List.class);
-        List<String> authorities = rawAuthorities == null
-                ? Collections.emptyList()
-                : rawAuthorities.stream().map(String::valueOf).collect(Collectors.toList());
+        List<String> authorities = rawAuthorities == null ? Collections.emptyList()
+            : rawAuthorities.stream().map(String::valueOf).collect(Collectors.toList());
         jwtUserInfo.setAuthorities(authorities);
 
         return jwtUserInfo;

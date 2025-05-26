@@ -1,12 +1,10 @@
 package com.shiyuan.base.modules.user;
 
-
 import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.vo.VUserVO;
-import org.mapstruct.*;
-
 import java.util.List;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserConverter {

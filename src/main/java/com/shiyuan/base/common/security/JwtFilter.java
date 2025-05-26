@@ -7,6 +7,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,11 +22,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     @Autowired
@@ -32,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     // 从 JWT 令牌中解析出用户信息和权限，将用户信息和权限封装到 Authentication 对象中，并将其设置到 SecurityContextHolder 中
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
         String jwt = null;
@@ -57,13 +56,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (jwtUserInfo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // 构造权限，需要加上ROLE_前缀，验证权限的注解hasRole("ADMIN") 时，其实底层是去找 ROLE_ADMIN
-            List<GrantedAuthority> authorities = jwtUserInfo.getAuthorities()
-                    .stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+            List<GrantedAuthority> authorities =
+                jwtUserInfo.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
             // 从 Token 中解析出用户信息, 手动构造一个已认证的 Authentication 对象，并将其存入 SecurityContextHolder
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(jwtUserInfo, null, authorities);
+            UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(jwtUserInfo, null, authorities);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }

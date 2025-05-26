@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * @TableName v_trailer
  */
-@TableName(value ="v_trailer")
+@TableName(value = "v_trailer")
 @Data
 public class VTrailer {
     @TableId(value = "id", type = IdType.AUTO)

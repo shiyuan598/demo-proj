@@ -12,23 +12,21 @@ import com.shiyuan.base.modules.user.dto.VUserAddDTO;
 import com.shiyuan.base.modules.user.dto.VUserUpdateDTO;
 import com.shiyuan.base.modules.user.mapper.VUserMapper;
 import com.shiyuan.base.modules.user.vo.VUserVO;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
-* @author wangshiyuan
-* @description 针对表【v_user】的数据库操作Service实现
-* @createDate 2025-04-24 13:40:42
-*/
+ * @author wangshiyuan
+ * @description 针对表【v_user】的数据库操作Service实现
+ * @createDate 2025-04-24 13:40:42
+ */
 @Service
 @Primary
-public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser>
-    implements VUserService{
+public class VUserServiceImpl extends ServiceImpl<VUserMapper, VUser> implements VUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 

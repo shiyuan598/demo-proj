@@ -10,22 +10,20 @@ import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.mapper.VVehicleMapper;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
-* @author wangshiyuan
-* @description 针对表【v_vehicle】的数据库操作Service实现
-* @createDate 2025-04-24 13:40:42
-*/
+ * @author wangshiyuan
+ * @description 针对表【v_vehicle】的数据库操作Service实现
+ * @createDate 2025-04-24 13:40:42
+ */
 @Service
 @Primary
-public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
-    implements VVehicleService{
+public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle> implements VVehicleService {
 
     @Autowired
     VVehicleMapper vVehicleMapper;
@@ -41,7 +39,8 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
             wrapper.like(VVehicle::getVehicleNo, blurry);
         }
         wrapper.eq(VVehicle::getState, 1);
-        wrapper.select(VVehicle::getId, VVehicle::getVehicleNo, VVehicle::getProject, VVehicle::getPlace, VVehicle::getState);
+        wrapper.select(VVehicle::getId, VVehicle::getVehicleNo, VVehicle::getProject, VVehicle::getPlace,
+            VVehicle::getState);
         wrapper.orderByDesc(VVehicle::getCreateTime);
 
         List<VVehicle> vehicleList = this.list(wrapper);
@@ -87,9 +86,8 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         }
         // 校验 vehicleNo 是否已存在（除自己以外）
         if (vehicleUpdateDTO.getVehicleNo() != null) {
-            boolean vehicleNoExists = this.lambdaQuery()
-                    .eq(VVehicle::getVehicleNo, vehicleUpdateDTO.getVehicleNo())
-                    .ne(VVehicle::getId, id) // 排除自己
+            boolean vehicleNoExists =
+                this.lambdaQuery().eq(VVehicle::getVehicleNo, vehicleUpdateDTO.getVehicleNo()).ne(VVehicle::getId, id) // 排除自己
                     .exists();
             if (vehicleNoExists) {
                 throw new IllegalArgumentException("车辆编号已存在");
@@ -101,7 +99,3 @@ public class VVehicleServiceImpl extends ServiceImpl<VVehicleMapper, VVehicle>
         return existingVehicle;
     }
 }
-
-
-
-

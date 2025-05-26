@@ -5,6 +5,11 @@ import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -14,13 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
-
-@Tag(name="文件操作")
+@Tag(name = "文件操作")
 @RestController
 @RequestMapping("/file")
 public class FileController {
@@ -29,7 +28,8 @@ public class FileController {
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
-    public ResponseEntity<ResponseResult<String>> upload(@Parameter(description = "上传文件") @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseResult<String>>
+        upload(@Parameter(description = "上传文件") @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseResult.fail(ResultCode.PARAM_ERROR));
         }
@@ -73,15 +73,13 @@ public class FileController {
             // 根据文件后缀设置文件类型
             String contentType = Files.probeContentType(path);
             if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;  // 默认二进制流
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // 默认二进制流
             }
 
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .body(resource);
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType(contentType)).body(resource);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(null);
         }

@@ -6,14 +6,13 @@ import com.shiyuan.base.modules.vehicle.dto.VVehicleAddDTO;
 import com.shiyuan.base.modules.vehicle.dto.VVehicleUpdateDTO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleDictVO;
 import com.shiyuan.base.modules.vehicle.vo.VVehicleVO;
-
 import java.util.List;
 
 /**
-* @author wangshiyuan
-* @description 针对表【v_vehicle】的数据库操作Service
-* @createDate 2025-04-24 13:40:42
-*/
+ * @author wangshiyuan
+ * @description 针对表【v_vehicle】的数据库操作Service
+ * @createDate 2025-04-24 13:40:42
+ */
 public interface VVehicleService extends IService<VVehicle> {
     List<VVehicleDictVO> getDictVO(String blurry);
 

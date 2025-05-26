@@ -12,7 +12,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Primary
-public class VModuleServiceImpl extends ServiceImpl<VModuleMapper, VModule>
-        implements VModuleService{
-
-}
+public class VModuleServiceImpl extends ServiceImpl<VModuleMapper, VModule> implements VModuleService {}
