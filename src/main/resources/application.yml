@@ -1,9 +1,14 @@
 spring:
   profiles:
     active: dev # 默认激活 dev，可在部署时使用 prod 替换
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
 
 server:
   port: 9002
+  address: 0.0.0.0
   servlet:
     context-path: /api
 

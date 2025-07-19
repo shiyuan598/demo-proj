@@ -5,11 +5,6 @@ import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Tag(name = "文件操作")
 @RestController
@@ -87,6 +88,15 @@ public class FileController {
 
     // 校验文件类型，允许上传的文件类型可以根据实际需要调整
     private boolean isValidFileType(String contentType) {
-        return contentType != null && (contentType.startsWith("image/") || contentType.equals("application/pdf"));
+        if (contentType == null) return false;
+
+        return contentType.startsWith("image/") ||             // 所有图片类型：image/png, image/jpeg 等
+            contentType.equals("application/pdf") ||        // PDF
+            contentType.equals("text/plain") ||             // 文本文件 .txt
+            contentType.equals("application/zip") ||        // .zip 压缩包
+            contentType.equals("application/x-zip-compressed") || // IE 上传 zip 时的类型
+            contentType.equals("application/x-rar-compressed") || // RAR 文件
+            contentType.equals("application/x-7z-compressed") ||  // 7z 文件
+            contentType.equals("application/octet-stream");       // 通用二进制流，某些浏览器上传未知文件类型时会是这个
     }
 }
