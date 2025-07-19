@@ -1,6 +1,5 @@
 package com.shiyuan.base.common.security;
 
-import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +38,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 放行登录接口
                 .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
-                .requestMatchers("/file/download/**").permitAll()
+                .requestMatchers("/file/upload", "/file/download").permitAll()
                 // 放行 Knife4j 和 Swagger 文档相关路径
                 .requestMatchers("/doc.html", // Knife4j 文档页面
                     "/webjars/**", // Knife4j 依赖的资源
