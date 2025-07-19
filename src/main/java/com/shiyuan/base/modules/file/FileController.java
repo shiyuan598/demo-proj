@@ -11,13 +11,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Tag(name = "文件操作")
@@ -26,6 +30,7 @@ import java.util.UUID;
 public class FileController {
 
     private static final String UPLOAD_DIR = "uploads/";
+    private static final String TEMP_DIR = "temp/";
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
@@ -53,6 +58,52 @@ public class FileController {
             Files.copy(file.getInputStream(), path);
 
             return ResponseEntity.ok(ResponseResult.success(filename));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "分片上传文件")
+    @PostMapping("/uploadChunk")
+    public ResponseEntity<ResponseResult<String>> uploadChunk(
+        @Parameter(description = "上传文件") @RequestParam("file") MultipartFile file,
+        @Parameter(description = "当前分片索引") @RequestParam("chunkIndex") int index,
+        @Parameter(description = "文件 MD5 校验码") @RequestParam("md5") String md5
+    ) {
+        try {
+            Path dir = Paths.get(TEMP_DIR + md5);
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+            Path chunkPath = dir.resolve(index + ".part");
+            try (InputStream in = file.getInputStream()) {
+                Files.copy(in, chunkPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return ResponseEntity.ok(ResponseResult.success("上传第" + index + "片成功"));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "合并分片文件")
+    @PostMapping("/mergeChunks")
+    public ResponseEntity<?> mergeChunks(
+        @Parameter(description = "文件名") @RequestParam("fileName") String fileName,
+        @Parameter(description = "文件总分片数") @RequestParam("totalChunks") int totalChunks,
+        @Parameter(description = "文件 MD5 校验码") @RequestParam("md5") String md5
+    ) {
+        try {
+            Path dir = Paths.get(TEMP_DIR + md5);
+            Path mergedFile = Paths.get(UPLOAD_DIR + fileName);
+            try (OutputStream os = Files.newOutputStream(mergedFile)) {
+                for (int i = 0; i < totalChunks; i++) {
+                    Path chunk = dir.resolve(i + ".part");
+                    Files.copy(chunk, os);
+                }
+            }
+            // 合并后可校验 MD5，完成后清理临时分片
+            FileSystemUtils.deleteRecursively(dir);
+            return ResponseEntity.ok(ResponseResult.success("合并文件成功" + fileName));
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
         }
