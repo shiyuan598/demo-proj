@@ -38,7 +38,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 放行登录接口
                 .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
-                .requestMatchers("/file/upload", "/file/download", "/file/uploadChunk", "/file/mergeChunks").permitAll()
+                .requestMatchers("/file/**").permitAll()
                 // 放行 Knife4j 和 Swagger 文档相关路径
                 .requestMatchers("/doc.html", // Knife4j 文档页面
                     "/webjars/**", // Knife4j 依赖的资源

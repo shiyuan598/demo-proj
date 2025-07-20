@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,13 +16,14 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Tag(name = "文件操作")
@@ -111,27 +113,130 @@ public class FileController {
 
     @Operation(summary = "下载文件")
     @GetMapping("/download")
-    public ResponseEntity<Resource> download(@Parameter(description = "文件名") @RequestParam String filename) {
-        if (filename == null || filename.trim().isEmpty()) {
+    public ResponseEntity<Resource> download(@Parameter(description = "文件名") @RequestParam String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }
 
         try {
-            Path path = Paths.get(UPLOAD_DIR + filename);
+            Path path = Paths.get(UPLOAD_DIR + fileName);
             if (!Files.exists(path)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            // 根据文件后缀设置文件类型
-            String contentType = Files.probeContentType(path);
+            String contentType = URLConnection.guessContentTypeFromName(fileName);
             if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // 默认二进制流
+                contentType = Files.probeContentType(path);
+            }
+            if (contentType == null) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             }
 
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                 .contentType(MediaType.parseMediaType(contentType)).body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @Operation(summary = "获取文件信息")
+    @GetMapping("/fileInfo")
+    public ResponseEntity<ResponseResult<Map<String, Object>>> getFileInfo(@Parameter(description = "文件名")@RequestParam String fileName) {
+        Path filePath = Paths.get(UPLOAD_DIR + fileName);
+        if (!Files.exists(filePath)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        try {
+            long size = Files.size(filePath);
+            Map<String, Object> result = new HashMap<>();
+            result.put("fileName", fileName);
+            result.put("size", size);
+            return ResponseEntity.ok(ResponseResult.success(result));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @Operation(summary = "分块下载文件")
+    @GetMapping("/downloadChunk")
+    public ResponseEntity<Resource> downloadChunk(@Parameter(description = "文件名") @RequestParam String fileName,
+        @Parameter(description = "开始位置") @RequestHeader(value = "Range", required = false) String rangeHeader) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        try {
+            Path FILE_PATH = Paths.get(UPLOAD_DIR + fileName);
+            if (!Files.exists(FILE_PATH)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            File file = new File(String.valueOf(FILE_PATH));
+            long fileLength = file.length();
+
+            // 没有Range请求头，直接返回整个文件
+            if (rangeHeader == null) {
+                InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+                return ResponseEntity.ok()
+                    .contentLength(fileLength)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+            }
+
+            // Range: bytes=0-999 这种格式
+            String rangeValue = rangeHeader.trim().toLowerCase().replace("bytes=", "");
+            String[] ranges = rangeValue.split("-");
+            long start = Long.parseLong(ranges[0]);
+            long end = ranges.length > 1 && !ranges[1].isEmpty() ? Long.parseLong(ranges[1]) : fileLength - 1;
+            if (end >= fileLength) {
+                end = fileLength - 1;
+            }
+            long contentLength = end - start + 1;
+
+            // 构造分片输入流
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.seek(start);
+            long finalEnd = end;
+            InputStream inputStream = new InputStream() {
+                long pos = start;
+                @Override
+                public int read() throws IOException {
+                    if (pos > finalEnd) return -1;
+                    int b = raf.read();
+                    if (b != -1) pos++;
+                    else raf.close();
+                    return b;
+                }
+                @Override
+                public int read(byte[] b, int off, int len) throws IOException {
+                    if (pos > finalEnd) return -1;
+                    if (pos + len - 1 > finalEnd) {
+                        len = (int)(finalEnd - pos + 1);
+                    }
+                    int readLen = raf.read(b, off, len);
+                    if (readLen != -1) pos += readLen;
+                    else raf.close();
+                    return readLen;
+                }
+                @Override
+                public void close() throws IOException {
+                    raf.close();
+                }
+            };
+
+            InputStreamResource resource = new InputStreamResource(inputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
+            headers.add("Accept-Ranges", "bytes");
+
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                .headers(headers)
+                .contentLength(contentLength)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(null);
         }
