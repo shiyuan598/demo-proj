@@ -7,10 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,12 +16,23 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private List<String> permitAllPaths;
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     // 从请求头中提取 JWT 令牌；验证 JWT 令牌的有效性，包括签名验证、过期时间检查等
     // 从 JWT 令牌中解析出用户信息和权限，将用户信息和权限封装到 Authentication 对象中，并将其设置到 SecurityContextHolder 中
@@ -33,6 +40,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException {
 
+        String uri = request.getRequestURI();
+        // 1. 如果是白名单，直接跳过 JWT 校验
+        if (permitAllPaths.stream().anyMatch(path -> pathMatcher.match(path, uri))) {
+            chain.doFilter(request, response);
+            return;
+        }
+        // 2.否则，从请求头中获取 JWT 令牌进行验证
         final String authorizationHeader = request.getHeader("Authorization");
         String jwt = null;
         JwtUserInfo jwtUserInfo = null;

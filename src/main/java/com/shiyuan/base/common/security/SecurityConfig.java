@@ -1,5 +1,6 @@
 package com.shiyuan.base.common.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +27,9 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+
+    @Autowired
+    private List<String> permitAllPaths;
 
     public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
@@ -35,20 +40,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource())) // 启用跨域配置
-            .authorizeHttpRequests(auth -> auth
-                // 放行登录接口
-                .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
-                .requestMatchers("/file/**").permitAll()
-                // 放行 Knife4j 和 Swagger 文档相关路径
-                .requestMatchers("/doc.html", // Knife4j 文档页面
-                    "/webjars/**", // Knife4j 依赖的资源
-                    "/v3/api-docs/**", // OpenAPI 规范数据
-                    "/swagger-resources/**", // Swagger 资源
-                    "/swagger-ui/**", // Swagger UI 界面
-                    "/swagger-ui.html" // Swagger UI 页面
-                ).permitAll()
-                // 放行静态资源路径
-                .requestMatchers("/static/**", "/resources/**", "/images/**").permitAll().anyRequest().authenticated())
+            .authorizeHttpRequests(auth -> {
+                for (String path : permitAllPaths) {
+                    auth.requestMatchers(path).permitAll();
+                }
+                auth.anyRequest().authenticated();
+            })
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
