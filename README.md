@@ -80,7 +80,7 @@ export JWT_EXPIRATION=86400000
 
 ### 5. 启动项目
 ```bash
-./mvnw spring-boot:run
+./mvn spring-boot:run
 ```
 
 ### 6. 访问接口文档
@@ -111,7 +111,7 @@ Spotless插件 + Eclipse Java Alibaba Style XML：
 ### 2. ☕ 方式一：使用 Jar 包部署（传统方式）
 ```bash
 # 打包
-./mvnw clean package -DskipTests
+./mvn clean package -DskipTests
 
 # 设置环境变量（或使用 -D 参数）
 export SPRING_PROFILES_ACTIVE=prod
