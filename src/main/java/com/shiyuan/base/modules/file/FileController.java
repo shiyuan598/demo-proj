@@ -96,7 +96,11 @@ public class FileController {
     ) {
         try {
             Path dir = Paths.get(TEMP_DIR + md5);
+
             Path mergedFile = Paths.get(UPLOAD_DIR + fileName);
+            if (!Files.exists(mergedFile)) {
+                Files.createDirectories(mergedFile.getParent());
+            }
             try (OutputStream os = Files.newOutputStream(mergedFile)) {
                 for (int i = 0; i < totalChunks; i++) {
                     Path chunk = dir.resolve(i + ".part");
