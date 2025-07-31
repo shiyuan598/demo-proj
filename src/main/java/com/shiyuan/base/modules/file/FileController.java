@@ -96,18 +96,24 @@ public class FileController {
     ) {
         try {
             Path dir = Paths.get(TEMP_DIR + md5);
-
             Path mergedFile = Paths.get(UPLOAD_DIR + fileName);
             if (!Files.exists(mergedFile)) {
                 Files.createDirectories(mergedFile.getParent());
             }
-            try (OutputStream os = Files.newOutputStream(mergedFile)) {
+
+            try (RandomAccessFile raf = new RandomAccessFile(mergedFile.toFile(), "rw")) {
+                byte[] buffer = new byte[6 * 1024 * 1024];
                 for (int i = 0; i < totalChunks; i++) {
                     Path chunk = dir.resolve(i + ".part");
-                    Files.copy(chunk, os);
+                    try(RandomAccessFile chunkRaf = new RandomAccessFile(chunk.toFile(), "r")) {
+                        int readLen = 0;
+                        while ((readLen = chunkRaf.read(buffer)) != -1) {
+                            raf.write(buffer, 0, readLen);
+                        }
+                    }
                 }
             }
-            // 合并后可校验 MD5，完成后清理临时分片
+            // 合并完成后清理临时分片
             FileSystemUtils.deleteRecursively(dir);
             return ResponseEntity.ok(ResponseResult.success("合并文件成功" + fileName));
         } catch (IOException e) {
@@ -165,22 +171,24 @@ public class FileController {
 
     @Operation(summary = "分块下载文件")
     @GetMapping("/downloadChunk")
-    public ResponseEntity<Resource> downloadChunk(@Parameter(description = "文件名") @RequestParam String fileName,
+    public ResponseEntity<Resource> downloadChunk(
+        @Parameter(description = "文件名") @RequestParam String fileName,
         @Parameter(description = "开始位置") @RequestHeader(value = "Range", required = false) String rangeHeader) {
+
         if (fileName == null || fileName.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }
 
         try {
-            Path FILE_PATH = Paths.get(UPLOAD_DIR + fileName);
-            if (!Files.exists(FILE_PATH)) {
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            if (!Files.exists(filePath)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            File file = new File(String.valueOf(FILE_PATH));
+            File file = filePath.toFile();
             long fileLength = file.length();
 
-            // 没有Range请求头，直接返回整个文件
+            // 无 Range 头，返回整个文件
             if (rangeHeader == null) {
                 InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
                 return ResponseEntity.ok()
@@ -189,44 +197,51 @@ public class FileController {
                     .body(resource);
             }
 
-            // Range: bytes=0-999 这种格式
+            // Range: bytes=START-END
             String rangeValue = rangeHeader.trim().toLowerCase().replace("bytes=", "");
             String[] ranges = rangeValue.split("-");
             long start = Long.parseLong(ranges[0]);
-            long end = ranges.length > 1 && !ranges[1].isEmpty() ? Long.parseLong(ranges[1]) : fileLength - 1;
-            if (end >= fileLength) {
-                end = fileLength - 1;
-            }
+            long end = (ranges.length > 1 && !ranges[1].isEmpty()) ? Long.parseLong(ranges[1]) : fileLength - 1;
+            end = Math.min(end, fileLength - 1);
             long contentLength = end - start + 1;
 
-            // 构造分片输入流
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            raf.seek(start);
+            // 创建 InputStream（封装 RandomAccessFile）
             long finalEnd = end;
             InputStream inputStream = new InputStream() {
-                long pos = start;
+                private final RandomAccessFile raf = new RandomAccessFile(file, "r");
+                private long pos = start;
+                private final long endPos = finalEnd;
+                private boolean closed = false;
+
+                {
+                    raf.seek(start);
+                }
+
                 @Override
                 public int read() throws IOException {
-                    if (pos > finalEnd) return -1;
+                    if (pos > endPos) return -1;
                     int b = raf.read();
                     if (b != -1) pos++;
-                    else raf.close();
                     return b;
                 }
+
                 @Override
                 public int read(byte[] b, int off, int len) throws IOException {
-                    if (pos > finalEnd) return -1;
-                    if (pos + len - 1 > finalEnd) {
-                        len = (int)(finalEnd - pos + 1);
+                    if (pos > endPos) return -1;
+                    if (pos + len - 1 > endPos) {
+                        len = (int) (endPos - pos + 1);
                     }
                     int readLen = raf.read(b, off, len);
                     if (readLen != -1) pos += readLen;
-                    else raf.close();
                     return readLen;
                 }
+
                 @Override
                 public void close() throws IOException {
-                    raf.close();
+                    if (!closed) {
+                        closed = true;
+                        raf.close();
+                    }
                 }
             };
 
@@ -241,6 +256,7 @@ public class FileController {
                 .contentLength(contentLength)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(null);
         }
