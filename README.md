@@ -129,10 +129,10 @@ $env:JWT_SECRET="your_secure_secret_key_base64"
 # 启动项目
 java -jar target/demo-proj-0.0.1-SNAPSHOT.jar
 
-#使用参数(注意-D后没有空格，-jar放后面)：
+#使用D参数(注意-D后没有空格，-jar放后面)：
  java -DJWT_SECRET=your_secret_value -DSPRING_PROFILE=prod -jar .\demo-proj-0.0.1-SNAPSHOT.jar
  #或使用(--参数需放后面)
- java -jar .\demo-proj-0.0.1-SNAPSHOT.jar --JWT_SECRET=your_secret_value --SPRING_PROFILE=prod
+ java -jar .\demo-proj-0.0.1-SNAPSHOT.jar --SPRING_PROFILE=prod --JWT_SECRET=your_secret_value
 ```
 
 3. 访问服务
@@ -162,14 +162,14 @@ docker build -t demo-proj:latest .
 
 **启动容器（推荐方式：使用环境变量）**
 ```bash
-docker run -d -e "SPRING_PROFILES_ACTIVE=prod" -e "JWT_SECRET=你的密钥" -e "JWT_EXPIRATION=86400000" -p 9002:9002 --name demo-proj demo-proj:latest
+docker run -d -e "SPRING_PROFILE=prod" -e "JWT_SECRET=你的密钥" -e "JWT_EXPIRATION=86400000" -p 9002:9002 --name demo-proj demo-proj:latest
 ```
 
 📝 环境变量说明
 
 | 变量名            | 说明                     |
 |------------------|------------------------|
-| SPRING_PROFILES_ACTIVE | 启动配置环境，如：dev、prod      |
+| SPRING_PROFILE | 启动配置环境，如：dev、prod      |
 | JWT_SECRET        | JWT 加密密钥，用于签发和校验 Token |
 | JWT_EXPIRATION | JWT 过期时间     |
 
