@@ -114,13 +114,27 @@ Spotless插件 + Eclipse Java Alibaba Style XML：
 ./mvn clean package -DskipTests
 
 # 设置环境变量（或使用 -D 参数）
-export SPRING_PROFILES_ACTIVE=prod
+#macos/linux
+export SPRING_PROFILE=prod
 export JWT_SECRET=your_secure_secret_key_base64
 export JWT_EXPIRATION=86400000
 
+#windows
+set SPRING_PROFILE=prod
+set JWT_SECRET=your_secure_secret_key_base64
+#powershell
+$env:SPRING_PROFILE="prod"
+$env:JWT_SECRET="your_secure_secret_key_base64"
+
 # 启动项目
 java -jar target/demo-proj-0.0.1-SNAPSHOT.jar
+
+#使用参数(注意-D后没有空格，-jar放后面)：
+ java -DJWT_SECRET=your_secret_value -DSPRING_PROFILE=prod -jar .\demo-proj-0.0.1-SNAPSHOT.jar
+ #或使用(--参数需放后面)
+ java -jar .\demo-proj-0.0.1-SNAPSHOT.jar --JWT_SECRET=your_secret_value --SPRING_PROFILE=prod
 ```
+
 3. 访问服务
 
 - 默认端口为 9002，接口地址为：

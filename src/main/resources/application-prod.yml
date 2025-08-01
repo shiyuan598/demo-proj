@@ -12,6 +12,12 @@ spring:
   thymeleaf:
     cache: true
 
+server:
+  port: 9002
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+
 jwt:
   secret: ${JWT_SECRET} # 不提供默认值，未设置将启动失败
 
