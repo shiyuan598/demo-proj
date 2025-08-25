@@ -5,6 +5,7 @@ import com.shiyuan.base.common.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -44,7 +45,7 @@ public class FileController {
 
         try {
             // 使用 UUID 生成唯一文件名
-            String filename = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+            String filename = UUID.randomUUID().toString() + "-" + FilenameUtils.getExtension(file.getOriginalFilename());
             Path path = Paths.get(UPLOAD_DIR + filename);
 
             // 创建文件目录
