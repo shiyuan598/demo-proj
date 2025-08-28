@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +46,11 @@ public class FileController {
 
         try {
             // 使用 UUID 生成唯一文件名
-            String filename = UUID.randomUUID().toString() + "-" + FilenameUtils.getExtension(file.getOriginalFilename());
+            String filename = UUID.randomUUID().toString();
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if (StringUtils.hasText(extension)) {
+                filename += "." + extension.toLowerCase();
+            }
             Path path = Paths.get(UPLOAD_DIR + filename);
 
             // 创建文件目录
